@@ -5,12 +5,12 @@
 
 calcMSSSIM :: calcMSSSIM()
 {
-  K1 = 0.01;
-  K2 = 0.03;
-  gaussian_window = 11;
+  K1 = 0.001;
+  K2 = 0.003;
+  gaussian_window = 5;
   gaussian_sigma = 1.5;
   level = 5;
-  L = 255;
+  L = 1;
   ms_ssim_map = NULL;
   for (int i=0; i < 4; i++)
     ms_ssim_value.val[i] = -1; // Initialize with an out of bound value of mssim [0,1]
@@ -82,32 +82,29 @@ Scalar calcMSSSIM :: compare(Mat& source1, Mat& source2)
   ssim.setGaussian_window(gaussian_window);
   ssim.setGaussian_sigma(gaussian_sigma);
   ssim.setL(L);
-  //Creating an array of IplImages for ssim_map at various levels
-  ms_ssim_map = (Mat*) new Mat[level];
+  //Creating an array of Mats for ssim_map at various levels
+  // ms_ssim_map = new Mat[level];
 
-  Mat downsampleSrc1, downsampleSrc2;
- 
+  Mat downsampleSrc1, downsampleSrc2, temp;
+  Size downs_size;
+  Scalar mssim_t, mcs_t;
   for (int i=0; i<level; i++)
   {
     //Downsampling of the original images
    
     //Downsampling the images
-    Size downs_size = Size((int)(x/pow(2, i)), (int)(y/pow(2, i)));
+    downs_size = Size((int)(x/pow(2, i)), (int)(y/pow(2, i)));
+
     downsampleSrc1 = cv::Mat(downs_size, CV_32FC1);
     downsampleSrc2 = cv::Mat(downs_size, CV_32FC1);
     resize(source1, downsampleSrc1, downs_size, 0, 0, INTER_NEAREST); // note: maybe change interpolation function
     resize(source2, downsampleSrc2, downs_size, 0, 0, INTER_NEAREST);
-
     ssim.compare(downsampleSrc1, downsampleSrc2);
-
-    Scalar mssim_t = ssim.getMSSIM();
-    Scalar mcs_t = ssim.getMeanCSvalue();
-    ms_ssim_map[i] = ssim.getSSIM_map();
-    //releasing the CS_map since not required
-    ssim.releaseCS_map(); 
+    mssim_t = ssim.getMSSIM();
+    mcs_t = ssim.getMeanCSvalue();
     
-    cout<<"Size of MAP at level "<<i<<": "<<ms_ssim_map[i].rows<<"x"<<ms_ssim_map[i].cols<<"\n";
-    cout<<"Test values of ms_ssim = "<<mssim_t.val[0]<<" "<<mssim_t.val[1]<<" "<<mssim_t.val[2]<<"\n";
+    //releasing the CS_map since not required anymore
+    ssim.releaseCS_map(); 
     
     // calculating the withed average to find ms-ssim
     for (int j=0; j < 4; j++)

@@ -82,7 +82,7 @@ cv::Mat cvFITS(const char *filename)
     if (fits_read_keys_lng(fptr, "NAXIS", 1, 2, in_naxes, &nfound, &status))
       printerror(status);
 
-    printf("FITS image size: %ld x %ld - %d\n",in_naxes[0] , in_naxes[1], nfound );
+    //  printf("FITS image size: %ld x %ld - %d\n",in_naxes[0] , in_naxes[1], nfound );
 
     // import raw fits data
     double* image = new double[in_naxes[0] * in_naxes[1]];
@@ -428,7 +428,7 @@ int main (int argc, char **argv) {
 
     if ((algo & opt_psnr) != 0)
       {
-        res = ssim.compare(src1, src2);
+        res = psnr.compare(src1, src2);
         printCvScalar(fs, res, "PSNR", out_status);
       }
 

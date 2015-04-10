@@ -4,11 +4,11 @@
 
 calcSSIM :: calcSSIM()
 {
-  K1 = 0.01;
-  K2 = 0.03;
-  gaussian_window = 11;
+  K1 = 0.001;
+  K2 = 0.003;
+  gaussian_window = 5;
   gaussian_sigma = 1.5;
-  L = 255;
+  L = 1.0;
 }
 
 //int calcSSIM :: print_map()
