@@ -27,11 +27,7 @@ using namespace std;
 #include "msssim.h"
 #include "iqi.h"
 
-//#include "host_program_opencl.h"
-//#include "mse_opencl.h"
-//#include "ssim_opencl.h"
-//#include "msssim_opencl.h"
-//#include "iqi_opencl.h"
+// FITS library
 #include "fitsio.h"
 
 
@@ -130,22 +126,6 @@ int main (int argc, char **argv) {
   calcMSSSIM msssim;
   calcQualityIndex iqi;
 
-  // Printing device Information
-  //  host_program_openCl H;
-  //  H.print_Device_Info();
-
-  // Creating Objects of Metrics - OpenCl
-  // MSE_openCl M;
-  //  SSIM_openCl S;
-  // MS_SSIM_openCl MS;
-  // ImageQuI_openCl I;
-
-  // Initializing the OpenCl Objects - compile kernels
-  //  M.Init();
-  //  S.Init();
-  //  MS.Init();
-  // I.Init();
-
   // Creating ouput file storage
   CvFileStorage* fs;
   char output_file[50];
@@ -161,14 +141,12 @@ int main (int argc, char **argv) {
   int algo = 0;
   Colorspace space;
   space = GRAYSCALE; // default color space
-  bool opencl= false; // default no opencl
+
   char img_name1[500], img_name2[500]; // more space for long directory names
   int image1_status = 0, image2_status = 0;
   int opt_mse = 1, opt_psnr = 2, opt_ssim = 4, opt_msssim = 8, opt_iqi = 16;
   static struct option long_options[] = {
       {"algorithm", 1, 0, 'm'},
-      {"colorspace", 1, 0, 'c'},
-      {"opencl", 0, 0, 'p'},
       {"L", 1, 0, 'L'},
       {"K1", 1, 0, '1'},
       {"K2", 1, 0, '2'},
@@ -198,7 +176,7 @@ int main (int argc, char **argv) {
     exit(0);
   }
 
-  while ((c = getopt_long(argc, argv, "m:pc:L:1:2:s:l:a:b:g:B:o:hi", long_options, &option_index)) != -1) {
+  while ((c = getopt_long(argc, argv, "m:L:1:2:s:l:a:b:g:B:o:hi", long_options, &option_index)) != -1) {
       
     int this_option_optind = optind ? optind : 1;
     switch (c) {
@@ -226,38 +204,6 @@ int main (int argc, char **argv) {
               printError(fs, error, out_status);
               exit(0);
           }
-          break;
-      
-      case 'c':
-          int color_code;
-          #ifdef DEBUG
-          cout<<"Option colorspace\n";
-          #endif
-          sscanf(optarg, "%d", &color_code);
-          switch (color_code) {
-            case 0:
-              space = GRAYSCALE;
-              break;
-            case 1:
-              space = RGB;
-              break;
-            case 2:
-              space = YCbCr;
-              break;
-            default:
-              space = GRAYSCALE;
-              break;
-          }
-          #ifdef DEBUG
-          cout<<"Space = "<<space<<"\n";
-          #endif
-          break;
-
-      case 'p':
-          opencl = true;
-          #ifdef DEBUG
-          cout<<"Using OpenCL\n";
-          #endif
           break;
       
       case 'o':
@@ -493,27 +439,12 @@ int main (int argc, char **argv) {
         printCvScalar(fs, res, "SSIM", out_status);
       }
 
-  // Cleaning up OpenCL Hosts
-    // M.clean_up_host();
-    //  S.clean_up_host();
-    //  MS.clean_up_host();
-    // I.clean_up_host();
-
   waitKey(0);
 
 
   // Releasing storage
   if (fs != NULL)
     cvReleaseFileStorage( &fs);
-  
-  //Will be used to calculate time
-  /* 
-  gettimeofday(&end_time,NULL);
-  start_dtime=(double)start_time.tv_sec+(double)start_time.tv_usec/1000000.0;
-  end_dtime=(double)end_time.tv_sec+(double)end_time.tv_usec/1000000.0; 
-  diff=end_dtime-start_dtime;
-  printf("Reading Buffer - %ld %ld %f %ld %ld %f %f\n",start_time.tv_sec,start_time.tv_usec,start_dtime,end_time.tv_sec,end_time.tv_usec,end_dtime,diff); 
-  */
  
   exit(0);
 

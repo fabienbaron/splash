@@ -30,10 +30,6 @@ void print_help_menu() {
   printf("                            msssim - Multi-scale Structural Similarity Index Metric\n");
   printf("                            iqi - Image Quality Index \n");
   printf("                            all - All of the above metrics\n");
-  printf("  --colorspace              colorspace \n");
-  printf("                            0 - GRAYSCALE\n");
-  printf("                            1 - RGB\n");
-  printf("                            2 - YCbCr\n");
   printf("  --L                       L value for PSNR \n");
   printf("  --K1                      K1 value for SSIM \n");
   printf("  --K2                      K2 value for SSIM \n");
@@ -45,9 +41,6 @@ void print_help_menu() {
   printf("  --gamma                   Gamma - comma separated vector (size of level)  \n");
   printf("                            For example - --alpha 0.3,0.5,0.1,0.1 (for level = 4) \n");
   printf("  --B                       B is Block size value for smoothing in IQI \n");
-  printf("  Options with no arguments. \n");
-  printf("  --opencl                  Use OpenCL \n");
-  printf("  --index_map               Print Index_map to xml file \n");
   printf("  --help                    Displays help menu \n");
 }
 
