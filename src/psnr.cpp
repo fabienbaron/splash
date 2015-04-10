@@ -11,41 +11,15 @@ calcPSNR :: calcPSNR()
     PSNR.val[i] = -1;
 }
 
-CvScalar calcPSNR :: compare(IplImage *source1, IplImage *source2, Colorspace space)
+Scalar calcPSNR :: compare(Mat& img1, Mat& img2)
 {
-  IplImage *src1, *src2;
-  src1 = colorspaceConversion(source1, space);
-  src2 = colorspaceConversion(source2, space);
-  
-  if (1)
-  {
-    int x = src1->width, y = src1->height;
-    int nChan = src1->nChannels, d = IPL_DEPTH_32F;
-    //size before down sampling
-    CvSize size = cvSize(x, y);
+  //creating diff and difference squares
+  Mat diff, diff_sq;
     
-    //creating diff and difference squares
-    IplImage *img1 = cvCreateImage(size, d, nChan);
-    IplImage *img2 = cvCreateImage(size, d, nChan);
-    IplImage *diff = cvCreateImage(size, d, nChan);
-    IplImage *diff_sq = cvCreateImage(size, d, nChan);
-    
-    cvConvert(src1, img1);
-	  cvConvert(src2, img2);
-    cvAbsDiff(img1, img2, diff);
-    //Squaring the images thus created
-    cvPow(diff, diff_sq, 2);
-    mse = cvAvg(diff_sq);
-  
-    //Release images
-    cvReleaseImage(&img1);
-    cvReleaseImage(&img2);
-    cvReleaseImage(&diff);
-    cvReleaseImage(&diff_sq);
-  }
-  
-  cvReleaseImage(&src1);
-  cvReleaseImage(&src2);
+  absdiff(img1, img2, diff);
+  //Squaring the images thus created
+  pow(diff, 2, diff_sq);
+  mse = mean(diff_sq);
   
   PSNR.val[0] = 10.0*log10((L*L)/mse.val[0]);
   PSNR.val[1] = 10.0*log10((L*L)/mse.val[1]);

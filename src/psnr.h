@@ -7,8 +7,8 @@ class calcPSNR : public SimilarityMetric {
 
   private:
     int L;
-    CvScalar mse;
-    CvScalar PSNR;
+    Scalar mse;
+    Scalar PSNR;
   
   public:
    
@@ -17,10 +17,10 @@ class calcPSNR : public SimilarityMetric {
     // get and set functions
     void setL(int value) { L = value; }
     void setMSE(CvScalar value) { mse = value; }
-    CvScalar getPSNR() { return PSNR; }
+    Scalar getPSNR() { return PSNR; }
 
     // calculates PSNR using OpenCV functions
-    virtual CvScalar compare(IplImage *source1, IplImage *source2, Colorspace space);
+    virtual Scalar compare(Mat& source1, Mat& source2);
 
 };
 

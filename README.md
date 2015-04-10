@@ -21,7 +21,7 @@ Compared to the original code:
 Requirements
 ======================
 
-SPLASH uses OpenCV (optional OpenCL support is being phased out). 
+SPLASH uses OpenCV. 
 Under Ubuntu, libopencv-dev and libopencv-highgui-dev are required.
 
 Installation
