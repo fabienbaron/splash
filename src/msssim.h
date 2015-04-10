@@ -12,9 +12,8 @@ class calcMSSSIM : public SimilarityMetric {
     double gaussian_sigma; // gaussian_sigma value using in filtering
     int level; // no. of levels
     int L;
-    IplImage** ms_ssim_map;
-    CvScalar ms_ssim_value;
-
+    Mat* ms_ssim_map;
+    Scalar ms_ssim_value;
     float *alpha;
     float *beta;
     float *gamma;
@@ -36,8 +35,8 @@ class calcMSSSIM : public SimilarityMetric {
     void setBeta(float *val) { beta = val;}
     void setGamma(float *val) { gamma = val; }
 
-    CvScalar getMSSSIM() { return ms_ssim_value; }
-    IplImage** getMSSSIM_map() { return ms_ssim_map; }
+    Scalar getMSSSIM() { return ms_ssim_value; }
+    Mat* getMSSSIM_map() { return ms_ssim_map; }
 
     // release MSSSIM_map
     void releaseMSSSIM_map();
@@ -46,7 +45,7 @@ class calcMSSSIM : public SimilarityMetric {
     int print_map();
   
     // implementation function to calculate MS-SSIM using OpenCV functions
-    virtual CvScalar compare(IplImage *source1, IplImage *source2, Colorspace space);
+    virtual Scalar compare(Mat& source1, Mat& source2);
 
 };
 

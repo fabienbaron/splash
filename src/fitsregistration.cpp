@@ -493,7 +493,7 @@ int main (int argc, char **argv) {
       } 
     else if ((algo & opt_ssim) != 0)
       {
-        res = ssim.compare(src1, src2, space);
+        res = ssim.compare(src1, src2);
         printCvScalar(fs, res, "SSIM", out_status);
       }
 
