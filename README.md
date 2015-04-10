@@ -18,6 +18,18 @@ Compared to the original code:
 - MS-SSIM, see e.g. https://ece.uwaterloo.ca/~z70wang/publications/msssim.pdf
 - Universal Image Quality Index, Z. Wang, A.C. Bovik, "A Universal Image Quality Index", IEEE Signal Processing Letters, vol.9, no.3, pp.81-84, Mar 2002.
 
+Requirements
+======================
+
+SPLASH uses OpenCV (optional OpenCL support is being phased out). 
+Under Ubuntu, libopencv-dev and libopencv-highgui-dev are required.
+
+Installation
+======================
+
+SPLASH uses the classic CMake installation procedure. 
+
+
 Acknowledgments
 ======================
 
