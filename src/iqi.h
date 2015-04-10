@@ -6,9 +6,9 @@
 class calcQualityIndex : public SimilarityMetric {
 
   private:
-    int B; // block size value for filtering
-    IplImage *image_quality_map; // index_map
-    CvScalar image_quality_value; // image_quality_index value
+    int B; // blur block size value for filtering
+    Mat image_quality_map;
+    Scalar image_quality_value; // image_quality_index value
 
   public:
 
@@ -19,8 +19,8 @@ class calcQualityIndex : public SimilarityMetric {
     // get and setfunctions    
     void setB(int val) { B = val; }
 
-    CvScalar getImageQuailty() { return image_quality_value; }
-    IplImage* getImageQuality_map() { return image_quality_map; }
+    Scalar getImageQuality() { return image_quality_value; }
+    Mat getImageQuality_map() { return image_quality_map; }
 
     void releaseImageQuality_map();
 
@@ -28,7 +28,7 @@ class calcQualityIndex : public SimilarityMetric {
     int print_map();
     
     // returns the iqi_value using openCV functions
-    virtual CvScalar compare(IplImage *source1, IplImage *source2, Colorspace space);
+    virtual Scalar compare(Mat& source1, Mat& source2);
 
 };
 
