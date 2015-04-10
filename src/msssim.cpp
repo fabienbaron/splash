@@ -106,7 +106,7 @@ Scalar calcMSSSIM :: compare(Mat& source1, Mat& source2)
     //releasing the CS_map since not required
     ssim.releaseCS_map(); 
     
-    cout<<"Size of MAP at level = "<<i<<"size = "<<ms_ssim_map[i].rows<<" "<<ms_ssim_map[i].cols<<"\n";
+    cout<<"Size of MAP at level "<<i<<": "<<ms_ssim_map[i].rows<<"x"<<ms_ssim_map[i].cols<<"\n";
     cout<<"Test values of ms_ssim = "<<mssim_t.val[0]<<" "<<mssim_t.val[1]<<" "<<mssim_t.val[2]<<"\n";
     
     // calculating the withed average to find ms-ssim

@@ -31,17 +31,6 @@ using namespace std;
 #include "fitsio.h"
 
 
-
-void printerror(int status)
-{
-	if (status)
-        {
-		fits_report_error(stderr, status); /* print error report */
-		exit(status); /* terminate the program, returning error status */
-	    }
-	return;
-}
-
 void writeMatToFile(const Mat& m, const char* filename)
 {
     ofstream fout(filename);
@@ -61,6 +50,17 @@ void writeMatToFile(const Mat& m, const char* filename)
     }
 
     fout.close();
+}
+
+
+void printerror(int status)
+{
+	if (status)
+        {
+		fits_report_error(stderr, status); /* print error report */
+		exit(status); /* terminate the program, returning error status */
+	    }
+	return;
 }
 
 
@@ -406,18 +406,10 @@ int main (int argc, char **argv) {
   // Loading the source images in src1 and src2
   // in this version, the FITS images
 
-  Mat mat1 = cvFITS(img_name1);
-  Mat mat2 = cvFITS(img_name2);
+  Mat src1 = cvFITS(img_name1);
+  Mat src2 = cvFITS(img_name2);
 
-  // Because currrently the rest is using the old IplImage* format
-  // we convert mat1 to src1, mat2 to src2
-  IplImage mat1_oldformat = mat1;
-  IplImage* src1 = &mat1_oldformat;
-  
-  IplImage mat2_oldformat = mat2;
-  IplImage* src2 = &mat2_oldformat;
-
-  if ( (src1->width != src2->width) || (src1->height != src2->height) || (src1->nChannels != src2->nChannels) ) {
+  if ( (src1.rows != src2.rows) || (src1.cols != src2.cols) ) {
     printError(fs, "Image Dimensions mis-match", out_status);
     if (fs != NULL)
       cvReleaseFileStorage( &fs);
@@ -430,14 +422,36 @@ int main (int argc, char **argv) {
 
     if ((algo & opt_mse) != 0)
       {
-        res = mse.compare(mat1, mat2);
+        res = mse.compare(src1, src2);
         printCvScalar(fs, res, "MSE", out_status);
       } 
-    else if ((algo & opt_ssim) != 0)
+
+    if ((algo & opt_psnr) != 0)
+      {
+        res = ssim.compare(src1, src2);
+        printCvScalar(fs, res, "PSNR", out_status);
+      }
+
+    if ((algo & opt_ssim) != 0)
       {
         res = ssim.compare(src1, src2);
         printCvScalar(fs, res, "SSIM", out_status);
       }
+
+    if ((algo & opt_msssim) != 0)
+      {
+        res = msssim.compare(src1, src2);
+        printCvScalar(fs, res, "MSSIM", out_status);
+      }
+
+    if ((algo & opt_iqi) != 0)
+      {
+        res = iqi.compare(src1, src2);
+        printCvScalar(fs, res, "IQI", out_status);
+      }
+
+
+
 
   waitKey(0);
 
