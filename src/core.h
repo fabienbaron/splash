@@ -15,7 +15,7 @@
 #include <string.h>
 #include <time.h>
 #include <sys/time.h>
-#include <CL/cl.h>
+//#include <CL/cl.h>
 
 #define MAX_SOURCE_SIZE (0x100000)
 using namespace cv;

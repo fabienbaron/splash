@@ -27,11 +27,11 @@ using namespace std;
 #include "msssim.h"
 #include "iqi.h"
 
-#include "host_program_opencl.h"
-#include "mse_opencl.h"
-#include "ssim_opencl.h"
-#include "msssim_opencl.h"
-#include "iqi_opencl.h"
+//#include "host_program_opencl.h"
+//#include "mse_opencl.h"
+//#include "ssim_opencl.h"
+//#include "msssim_opencl.h"
+//#include "iqi_opencl.h"
 #include "fitsio.h"
 
 
@@ -131,24 +131,20 @@ int main (int argc, char **argv) {
   calcQualityIndex iqi;
 
   // Printing device Information
-  host_program_openCl H;
-  H.print_Device_Info();
+  //  host_program_openCl H;
+  //  H.print_Device_Info();
 
   // Creating Objects of Metrics - OpenCl
-  MSE_openCl M;
-  SSIM_openCl S;
-  MS_SSIM_openCl MS;
-  ImageQuI_openCl I;
+  // MSE_openCl M;
+  //  SSIM_openCl S;
+  // MS_SSIM_openCl MS;
+  // ImageQuI_openCl I;
 
   // Initializing the OpenCl Objects - compile kernels
-  M.Init();
-  S.Init();
-  MS.Init();
-  I.Init();
-  #ifdef DEBUG
-  cout<<"Finished Initialization\n";
-  #endif
- 
+  //  M.Init();
+  //  S.Init();
+  //  MS.Init();
+  // I.Init();
 
   // Creating ouput file storage
   CvFileStorage* fs;
@@ -297,9 +293,9 @@ int main (int argc, char **argv) {
           psnr.setL(L);
           ssim.setL(L);
           msssim.setL(L);
-          M.setL(L);
-          S.setL(L);
-          MS.setL(L);
+          //M.setL(L);
+	  // S.setL(L);
+	  // MS.setL(L);
           break;
       
       case '1':
@@ -310,8 +306,8 @@ int main (int argc, char **argv) {
           #endif
           ssim.setK1(K1);
           msssim.setK1(K1);
-          S.setK1(K1);
-          MS.setK1(K1);
+	  // S.setK1(K1);
+	  // MS.setK1(K1);
           break;
 
       case '2':
@@ -322,8 +318,8 @@ int main (int argc, char **argv) {
           #endif
           ssim.setK2(K2);
           msssim.setK2(K2);
-          S.setK2(K2);
-          MS.setK2(K2);
+          //S.setK2(K2);
+	  // MS.setK2(K2);
           break;
       
       case 'w':
@@ -336,8 +332,8 @@ int main (int argc, char **argv) {
             w++;
           ssim.setGaussian_window(w);
           msssim.setGaussian_window(w);
-          S.setGaussian_window(w);
-          MS.setGaussian_window(w);
+          //S.setGaussian_window(w);
+	  // MS.setGaussian_window(w);
           break;
       
       case 's':
@@ -348,8 +344,8 @@ int main (int argc, char **argv) {
           #endif
           ssim.setGaussian_sigma(sigma);
           msssim.setGaussian_sigma(sigma);
-          S.setGaussian_sigma(sigma);
-          MS.setGaussian_sigma(sigma);
+          //S.setGaussian_sigma(sigma);
+	  // MS.setGaussian_sigma(sigma);
           break;
       
       case 'l':
@@ -359,7 +355,7 @@ int main (int argc, char **argv) {
           printf("Setting level = %d\n", level);
           #endif
           msssim.setLevel(level);
-          MS.setLevel(level);
+          //MS.setLevel(level);
           break;
       
       case 'a':
@@ -377,7 +373,7 @@ int main (int argc, char **argv) {
           printf("Setting alpha = \n");
           #endif
           msssim.setAlpha(alpha);
-          MS.setAlpha(alpha);
+          //MS.setAlpha(alpha);
           break;
       
       case 'b':
@@ -395,7 +391,7 @@ int main (int argc, char **argv) {
           printf("Setting beta = \n");
           #endif
           msssim.setBeta(beta);
-          MS.setBeta(beta);
+	  // MS.setBeta(beta);
           break;
  
       case 'g':
@@ -413,7 +409,7 @@ int main (int argc, char **argv) {
           printf("Setting gamma = \n");
           #endif
           msssim.setGamma(gamma);
-          MS.setGamma(gamma);
+          //MS.setGamma(gamma);
           break;
 
       case 'B':
@@ -425,7 +421,7 @@ int main (int argc, char **argv) {
           if (B%2==1)
             B++;
           iqi.setB(B);
-          I.setB(B);
+          //I.setB(B);
           break;
       
       case 'i':
@@ -498,10 +494,10 @@ int main (int argc, char **argv) {
       }
 
   // Cleaning up OpenCL Hosts
-  M.clean_up_host();
-  S.clean_up_host();
-  MS.clean_up_host();
-  I.clean_up_host();
+    // M.clean_up_host();
+    //  S.clean_up_host();
+    //  MS.clean_up_host();
+    // I.clean_up_host();
 
   waitKey(0);
 
