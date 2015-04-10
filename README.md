@@ -1,5 +1,5 @@
 SPLASH is a FITS image comparison software licensed under the GNU
-GENERAL PUBLIC LICENSE Version 3, coded by Fabien Baron (baron@chara.gsu.edu).
+GENERAL PUBLIC LICENSE Version 3, currently developped by Fabien Baron (baron@chara.gsu.edu).
 
 SPLASH was originally based on metric, a Multi-threaded Image
 Similarity Metric Library used to compare two images. metric was a
