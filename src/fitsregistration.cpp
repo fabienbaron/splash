@@ -423,31 +423,31 @@ int main (int argc, char **argv) {
     if ((algo & opt_mse) != 0)
       {
         res = mse.compare(src1, src2);
-        printCvScalar(fs, res, "MSE", out_status);
+        cout << "MSE:\t" << res.val[0] << "\n";
       } 
 
     if ((algo & opt_psnr) != 0)
       {
         res = psnr.compare(src1, src2);
-        printCvScalar(fs, res, "PSNR", out_status);
+         cout << "PSNR:\t" << res.val[0] << "\n";
       }
 
     if ((algo & opt_ssim) != 0)
       {
         res = ssim.compare(src1, src2);
-        printCvScalar(fs, res, "SSIM", out_status);
+        cout << "SSIM:\t" << res.val[0] << "\n";
       }
 
     if ((algo & opt_msssim) != 0)
       {
         res = msssim.compare(src1, src2);
-        printCvScalar(fs, res, "MSSIM", out_status);
+        cout << "MSSSIM:\t" << res.val[0] << "\n";
       }
 
     if ((algo & opt_iqi) != 0)
       {
         res = iqi.compare(src1, src2);
-        printCvScalar(fs, res, "IQI", out_status);
+        cout << "IQI:\t" << res.val[0] << "\n";
       }
 
 
