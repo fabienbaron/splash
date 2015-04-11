@@ -101,7 +101,7 @@ float calcSSIM :: compare(const Mat& img1, const Mat& img2)
   ssim_value = mean(ssim_map);
   mean_cs_value = mean(cs_map);
 
-  return ssim_value.val[0];
+  return 1./ssim_value.val[0]-1;
 }
 
 
