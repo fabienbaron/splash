@@ -122,7 +122,7 @@ float calcMSSSIM :: compare(Mat& source1, Mat& source2)
     downsampleSrc2.release();
 
   }
-  return ms_ssim_value.val[0];
+  return 1./ms_ssim_value.val[0]-1.;
 }
 
 
