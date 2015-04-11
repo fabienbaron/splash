@@ -418,7 +418,7 @@ int main (int argc, char **argv) {
 
  float bestres = 1e99;
  int bestx=0, besty=0;
- float fullres[2*shift_range_x+1][2*shift_range_y+1];
+ //float fullres[2*shift_range_x+1][2*shift_range_y+1];
 
   for(int i=-shift_range_x;i<=shift_range_x;i++)
     {
@@ -428,7 +428,7 @@ int main (int argc, char **argv) {
 	  translation = (Mat_<float>(2,3) << 1, 0, (float)i, 0, 1, (float)j);
 	  // shift the images
 	  warpAffine(img2, img2_shifted,translation,img2.size());
-	  //	  cout << i << " " << j << " ";
+	  //  cout << i << " " << j << " ";
 	  //writeMatToFile(src1, "shifted.txt");
 	  //getchar(); 
 	  if ((algo & opt_mse) != 0)
@@ -458,10 +458,10 @@ int main (int argc, char **argv) {
 	  if ((algo & opt_iqi) != 0)
 	    {
 	      res = iqi.compare(img1, img2_shifted);
-	      // cout << "IQI:\t" << res << "\n";
+	      //  cout << " IQI:\t" << res << "\n";
 	    }
 
-	  fullres[i+shift_range_x][j+shift_range_y] = res;
+	  //fullres[i+shift_range_x][j+shift_range_y] = res;
 
 
       if(res<bestres)

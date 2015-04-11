@@ -4,7 +4,7 @@
 
 calcQualityIndex :: calcQualityIndex()
 {
-  B = 8;
+  B = 4;
   for (int i=0; i < 4; i++)
     image_quality_value.val[i] = -2;   // Initialize with an out of bound value for image_quality_value [-1.1]
 }
@@ -74,7 +74,7 @@ float calcQualityIndex :: compare(Mat& img1, Mat& img2)
 
   // cvDiv doesnt work
   // FB: because of zeroes in denominator... 
-  // original code replaces aberrant quotient values by 1.
+  // original code replaced aberrant quotient values by 1.
   image_quality_map = numerator / denominator;
 
   // image_quality_map created in image_quality_map
