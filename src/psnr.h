@@ -20,7 +20,7 @@ class calcPSNR : public SimilarityMetric {
     Scalar getPSNR() { return PSNR; }
 
     // calculates PSNR using OpenCV functions
-    virtual Scalar compare(Mat& source1, Mat& source2);
+    virtual float compare(Mat& source1, Mat& source2);
 
 };
 

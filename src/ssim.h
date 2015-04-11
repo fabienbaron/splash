@@ -14,7 +14,7 @@ class calcSSIM : public SimilarityMetric {
     double gaussian_sigma;
     int L;
     Mat ssim_map;
-    Scalar mssim_value;
+    Scalar ssim_value;
     Mat cs_map;
     Scalar mean_cs_value; // mean of contrast, structure (part of l,c,s)
 
@@ -28,7 +28,7 @@ class calcSSIM : public SimilarityMetric {
     void setGaussian_sigma(int val) { gaussian_sigma = val; }
     void setL(int val) { L = val; }
 
-    Scalar getMSSIM() { return mssim_value; }
+    Scalar getMSSIM() { return ssim_value; }
     Scalar getMeanCSvalue() { return mean_cs_value; }
     Mat& getSSIM_map() { return ssim_map; }
     Mat& getCS_map()   { return cs_map; }
@@ -43,7 +43,7 @@ class calcSSIM : public SimilarityMetric {
     int print_map();
 
     // calculating mean SSIM value using openCV functions
-    virtual Scalar compare(const Mat& img1, const Mat& img2);
+    virtual float compare(const Mat& img1, const Mat& img2);
 
 };
 

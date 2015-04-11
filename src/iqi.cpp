@@ -18,7 +18,7 @@ void calcQualityIndex :: releaseImageQuality_map() {
   image_quality_map.release();
 }
 
-Scalar calcQualityIndex :: compare(Mat& img1, Mat& img2)
+float calcQualityIndex :: compare(Mat& img1, Mat& img2)
 {
   //Image squares
   Mat img1_sq, img2_sq, img1_img2;
@@ -81,7 +81,7 @@ Scalar calcQualityIndex :: compare(Mat& img1, Mat& img2)
   // average is taken 
   image_quality_value = mean(image_quality_map);
 
-  return image_quality_value;
+  return image_quality_value.val[0];
 }
 
 

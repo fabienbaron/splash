@@ -7,7 +7,7 @@ class SimilarityMetric {
   public:
 
     // virtual functions compare, returns CvScalar value and has separate implementation for each of the algorithms
-    virtual Scalar compare(Mat& src1, Mat& src2)
+    virtual float compare(Mat& src1, Mat& src2)
     {
     
     }

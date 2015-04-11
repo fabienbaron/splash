@@ -6,9 +6,9 @@ calcSSIM :: calcSSIM()
 {
   K1 = 0.001;
   K2 = 0.003;
-  gaussian_window = 5;
+  gaussian_window = 11;
   gaussian_sigma = 1.5;
-  L = 1.0;
+  L = 1.;
 }
 
 //int calcSSIM :: print_map()
@@ -30,12 +30,13 @@ void calcSSIM :: releaseCS_map() {
   cs_map.release(); 
 }
 
-Scalar calcSSIM :: compare(const Mat& img1, const Mat& img2)
+float calcSSIM :: compare(const Mat& img1, const Mat& img2)
 {
   // default settings
   const double C1 = (K1 * L) * (K1 * L); 
   const double C2 = (K2 * L) * (K2 * L);
 
+  
   Size gaussian_kernel;
   gaussian_kernel.width = gaussian_window;
   gaussian_kernel.height = gaussian_window;
@@ -97,10 +98,10 @@ Scalar calcSSIM :: compare(const Mat& img1, const Mat& img2)
   cs_map = numerator2 / denominator2;
 
   // average is taken for both SSIM_map and CS_map 
-  mssim_value = mean(ssim_map);
+  ssim_value = mean(ssim_map);
   mean_cs_value = mean(cs_map);
 
-  return mssim_value;
+  return ssim_value.val[0];
 }
 
 

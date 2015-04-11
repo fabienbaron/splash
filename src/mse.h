@@ -16,7 +16,7 @@ class calcMSE : public SimilarityMetric {
     Scalar getMSE() { return mse; }
 
     // calculates mse using openCV functions
-    virtual Scalar compare(const Mat& mat1, const Mat& mat2);
+    virtual float compare(const Mat& mat1, const Mat& mat2);
 
 };
 

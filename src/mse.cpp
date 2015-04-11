@@ -8,7 +8,7 @@ calcMSE :: calcMSE()
     mse.val[i] = -1;
 }
 
-Scalar calcMSE :: compare(const Mat& mat1, const Mat& mat2)
+float calcMSE :: compare(const Mat& mat1, const Mat& mat2)
 {
   //creating diff and difference squares
   Mat diff; 
@@ -16,11 +16,11 @@ Scalar calcMSE :: compare(const Mat& mat1, const Mat& mat2)
 
   absdiff(mat1, mat2, diff);
   pow(diff, 2, diff_sq);
-  Scalar num=sum(diff_sq);
+  Scalar num=mean(diff_sq);
   
   pow(mat1, 2, diff_sq); // re-using diff_sq
-  Scalar denom = sum(diff_sq);
+  Scalar denom = mean(diff_sq);
 
-  return num/denom;
+  return (num/denom).val[0];
 }
 

@@ -118,7 +118,7 @@ int main (int argc, char **argv) {
    
 
   // Result will be stored in res
-  CvScalar res;
+  float res;
   // Creating Objects of Metrics - Normal
   calcMSE mse;
   calcSSIM ssim;
@@ -388,11 +388,6 @@ int main (int argc, char **argv) {
     }
   }
  
-  // Finished with get_opt_long 
-  #ifdef DEBUG
-  cout<<"Finished with get_opt_long\n";
-  cout<<"Algo = "<<algo<<"\n";
-  #endif
  
   if (out_status == 1)
     fs = cvOpenFileStorage(output_file, 0, CV_STORAGE_WRITE);
@@ -406,55 +401,82 @@ int main (int argc, char **argv) {
   // Loading the source images in src1 and src2
   // in this version, the FITS images
 
-  Mat src1 = cvFITS(img_name1);
-  Mat src2 = cvFITS(img_name2);
+  Mat img1 = cvFITS(img_name1);
+  Mat img2 = cvFITS(img_name2);
 
-  if ( (src1.rows != src2.rows) || (src1.cols != src2.cols) ) {
+  if ( (img1.rows != img2.rows) || (img1.cols != img2.cols) ) {
     printError(fs, "Image Dimensions mis-match", out_status);
     if (fs != NULL)
       cvReleaseFileStorage( &fs);
     exit(0);
   }
 
-  //  FileStorage filedebug("debug_im1.txt", FileStorage::WRITE); //works but annoying to open in IDL
-  // filedebug << "MAT1" <<mat1;
-  //  writeMatToFile(mat1, "debug_im1.txt");
+  int shift_range_x = 10; //integer registration range
+  int shift_range_y = 10;
+  Mat translation;    
+  Mat img2_shifted; // shifted versions of img1 and img2
 
-    if ((algo & opt_mse) != 0)
-      {
-        res = mse.compare(src1, src2);
-        cout << "MSE:\t" << res.val[0] << "\n";
-      } 
+ float bestres = 1e99;
+ int bestx=0, besty=0;
+ float fullres[2*shift_range_x+1][2*shift_range_y+1];
 
-    if ((algo & opt_psnr) != 0)
-      {
-        res = psnr.compare(src1, src2);
-         cout << "PSNR:\t" << res.val[0] << "\n";
-      }
+  for(int i=-shift_range_x;i<=shift_range_x;i++)
+    {
+      for(int j=-shift_range_y;j<=shift_range_y;j++)
+	{
+	  // set the translation matrix
+	  translation = (Mat_<float>(2,3) << 1, 0, (float)i, 0, 1, (float)j);
+	  // shift the images
+	  warpAffine(img2, img2_shifted,translation,img2.size());
+	  //	  cout << i << " " << j << " ";
+	  //writeMatToFile(src1, "shifted.txt");
+	  //getchar(); 
+	  if ((algo & opt_mse) != 0)
+	    {
+	      res = mse.compare(img1, img2_shifted);
+	      //  cout << "MSE:\t" << res << "\n";
+	    } 
 
-    if ((algo & opt_ssim) != 0)
-      {
-        res = ssim.compare(src1, src2);
-        cout << "SSIM:\t" << res.val[0] << "\n";
-      }
+	  if ((algo & opt_psnr) != 0)
+	    {
+	      res = psnr.compare(img1, img2_shifted);
+	      // cout << "PSNR:\t" << res << "\n";
+	    }
+	  
+	  if ((algo & opt_ssim) != 0)
+	    {
+	      res = ssim.compare(img1, img2_shifted);
+	      // cout << "D-SSIM:\t" << res << "\n";
+	    }
+	  
+	  if ((algo & opt_msssim) != 0)
+	    {
+	      res = msssim.compare(img1, img2_shifted);
+	      // cout << "D-MS-SSIM:\t" << res << "\n";
+	    }
+	  
+	  if ((algo & opt_iqi) != 0)
+	    {
+	      res = iqi.compare(img1, img2_shifted);
+	      // cout << "IQI:\t" << res << "\n";
+	    }
 
-    if ((algo & opt_msssim) != 0)
-      {
-        res = msssim.compare(src1, src2);
-        cout << "MSSSIM:\t" << res.val[0] << "\n";
-      }
-
-    if ((algo & opt_iqi) != 0)
-      {
-        res = iqi.compare(src1, src2);
-        cout << "IQI:\t" << res.val[0] << "\n";
-      }
+	  fullres[i+shift_range_x][j+shift_range_y] = res;
 
 
+      if(res<bestres)
+	{
+	  bestres=res;
+	  bestx = -i;
+	  besty = -j;
+	}
 
+	}
+      
+    }
+  cout << bestres << "\t"<< bestx <<"\t" << besty << endl;
 
   waitKey(0);
-
 
   // Releasing storage
   if (fs != NULL)

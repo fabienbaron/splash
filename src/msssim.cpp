@@ -67,7 +67,7 @@ void calcMSSSIM :: releaseMSSSIM_map() {
 //  return 1;
 //}
 
-Scalar calcMSSSIM :: compare(Mat& source1, Mat& source2)
+float calcMSSSIM :: compare(Mat& source1, Mat& source2)
 {
   // image dimensions
   int x = source1.cols, y = source1.rows;
@@ -122,7 +122,7 @@ Scalar calcMSSSIM :: compare(Mat& source1, Mat& source2)
     downsampleSrc2.release();
 
   }
-  return ms_ssim_value;
+  return ms_ssim_value.val[0];
 }
 
 
