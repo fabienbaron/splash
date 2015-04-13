@@ -1,0 +1,10 @@
+../bin/splash --range 20 --subrange .1 --algorithm ssim --image1 2004true70.fits --image2 2004true70-8+5.fits
+returns:
+Algorithm       Range   Subpixel        Optimum         DX              DY
+SSIM            20      0.100000        0.009714        8.000000        -5.000000
+
+
+../bin/splash --range 20 --subrange .1 --algorithm ssim --image1 2004true70.fits --image2 2004-data1_regtv21.fits 
+returns:
+Algorithm       Range   Subpixel        Optimum         DX              DY
+SSIM            20      0.100000        0.007080        3.200000        -0.500000
