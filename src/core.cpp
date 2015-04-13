@@ -23,8 +23,7 @@ void print_help_menu() {
   printf("  --image1                  input image 1 name \n");
   printf("  --image2                  input image 2 name\n");
   printf("  --range                   integer range for registration\n");
-  printf("  --subpixel                subpixel precision for registration\n");
-  printf("  --out                     output format (.xml, [Default stdout])\n");
+  printf("  --subrange                subpixel precision for registration\n");
   printf("  --algorithm               algorithm to use \n");
   printf("                            mse - Mean Square Error\n");
   printf("                            psnr - Peak Signal to Noise Ratio \n");
