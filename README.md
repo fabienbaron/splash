@@ -2,17 +2,6 @@ SPLASH is a FITS image registration and comparison software licensed under the G
 GENERAL PUBLIC LICENSE Version 3, currently developped by Fabien Baron
 (baron@chara.gsu.edu).
 
-SPLASH was originally based on metric, a Multi-threaded Image
-Similarity Metric Library used to compare two images. metric was a
-part of project DIFFER as a part of Google Summer of Code
-(GSoC-2012).
-
-Compared to the original code:
-- SPLASH uses the modern cv::Mat class.
-- SPLASH uses single-channel 32-bit image representations.
-- SPLASH takes FITS images as input
-- SPLASH uses the CMake installation framework.
-
 SPLASH computes the following difference metrics between two FITS images:
 - Mean Square Error(MSE),
 - Peak Signal to Noise Ratio(PSNR)
@@ -36,8 +25,14 @@ SPLASH uses the classic CMake installation procedure.
 Acknowledgments
 ======================
 
-The original work on DIFFER and metric was supported as a part
-of Google Summer of code (GSoC-2012), the project Mentor being Vaclav
+SPLASH was originally based on metric/DIFFER, developped for Google
+Summer of Code (GSoC-2012), for which the project Mentor was Vaclav
 Rosecky (xrosecky@gmail.com), and the developer Dushyant Goyal
 (goyal1dushyant@gmail.com).
 
+Compared to the original code:
+- SPLASH does image registration.
+- SPLASH uses the modern cv::Mat class.
+- SPLASH uses single-channel 32-bit image representations.
+- SPLASH takes FITS images as input
+- SPLASH uses the CMake installation framework.
