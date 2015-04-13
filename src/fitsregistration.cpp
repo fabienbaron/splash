@@ -14,7 +14,7 @@
 
 #define MAX_SOURCE_SIZE (0x100000)
 using namespace cv;
-using namespace std;
+//using namespace std;
 
 // Including core.h
 #include "core.h"
@@ -30,6 +30,15 @@ using namespace std;
 // FITS library
 #include "fitsio.h"
 
+#define ALGO_MSE   0
+#define ALGO_PSNR  1
+#define ALGO_SSIM  2
+#define ALGO_MSSSIM 3
+#define ALGO_IQI   4
+
+const char* algo_names[] = {"MSE", "PSNR","SSIM","MS-SSIM", "IQI"};
+
+Mat registration(Mat& img1, Mat& img2, float& metric_value, float& dx, float& dy, const int range, const float subrange, const int algo, SimilarityMetric* method);
 
 void writeMatToFile(const Mat& m, const char* filename)
 {
@@ -64,7 +73,7 @@ void printerror(int status)
 }
 
 
-cv::Mat cvFITS(const char *filename)
+Mat cvFITS(const char *filename)
 {
     // A lot of ugly steps here...
 
@@ -117,15 +126,20 @@ int main (int argc, char **argv) {
   gettimeofday(&start_time,NULL);
    
 
-  // Result will be stored in res
+  // Minimum metric value will be stored in res
   float res;
+
+  // Integer pixel range and subpixel step ("subrange")
+  int range = 0;
+  float subrange = 1;
+
   // Creating Objects of Metrics - Normal
   calcMSE mse;
   calcSSIM ssim;
   calcPSNR psnr;
   calcMSSSIM msssim;
   calcQualityIndex iqi;
-
+  SimilarityMetric* method;
   // Creating ouput file storage
   CvFileStorage* fs;
   char output_file[50];
@@ -138,7 +152,7 @@ int main (int argc, char **argv) {
 
   // Setting up the options
   int c;
-  int algo = 0;
+  int algo = 99; // default value = 99 = none
   Colorspace space;
   space = GRAYSCALE; // default color space
 
@@ -147,6 +161,8 @@ int main (int argc, char **argv) {
   int opt_mse = 1, opt_psnr = 2, opt_ssim = 4, opt_msssim = 8, opt_iqi = 16;
   static struct option long_options[] = {
       {"algorithm", 1, 0, 'm'},
+      {"range", 1, 0, 'r'},
+      {"subrange", 1, 0, 'p'},
       {"L", 1, 0, 'L'},
       {"K1", 1, 0, '1'},
       {"K2", 1, 0, '2'},
@@ -176,7 +192,7 @@ int main (int argc, char **argv) {
     exit(0);
   }
 
-  while ((c = getopt_long(argc, argv, "m:L:1:2:s:l:a:b:g:B:o:hi", long_options, &option_index)) != -1) {
+  while ((c = getopt_long(argc, argv, "m:r:p:L:1:2:s:l:a:b:g:B:o:hi", long_options, &option_index)) != -1) {
       
     int this_option_optind = optind ? optind : 1;
     switch (c) {
@@ -188,30 +204,51 @@ int main (int argc, char **argv) {
           printf("Algorithm - %s \n", algorithm);
           #endif
           if (strcmp(algorithm,"mse") == 0)
-              algo = algo | opt_mse;
+	    { 
+	      algo = ALGO_MSE;
+	      method = (SimilarityMetric*) &mse;
+	    }
           if (strcmp(algorithm,"psnr") == 0)
-              algo = algo | opt_psnr;
+	    { 
+	      algo = ALGO_PSNR;
+	      method = (SimilarityMetric*) &psnr;
+	    }
           if (strcmp(algorithm,"ssim") == 0)
-              algo = algo | opt_ssim;
+	    {
+              algo = ALGO_SSIM;
+	      method = (SimilarityMetric*) &ssim;
+	    }
           if (strcmp(algorithm,"msssim") == 0)
-              algo = algo | opt_msssim;
+	    {
+              algo = ALGO_MSSSIM;
+	      method = (SimilarityMetric*) &msssim;
+	    }
           if (strcmp(algorithm,"iqi") == 0)
-              algo = algo | opt_iqi;
-          if (strcmp(algorithm,"all") == 0)
-              algo = opt_mse | opt_psnr | opt_ssim | opt_msssim | opt_iqi;
-          if (!algo) {
-              sprintf(error, "%s%s", "Invalid algorithm\n", "Possible arguments are - mse, psnr, ssim, msssim, iqi, all");
+            {  algo = ALGO_IQI;
+	      method = (SimilarityMetric*) &iqi;
+	    }
+          if (algo == 99) {
+              sprintf(error, "%s%s", "Invalid algorithm\n", "Possible arguments are - mse, psnr, ssim, msssim, iqi");
               printError(fs, error, out_status);
               exit(0);
           }
           break;
+
+    case 'r':
+      sscanf(optarg, "%d", &range);
+      break;
       
-      case 'o':
-          sscanf(optarg, "%s", output_file );
-          out_status = 1;
-          #ifdef DEBUG
-          printf("output_file - %s \n", output_file);
-          #endif
+      
+    case 'p':
+      sscanf(optarg, "%f", &subrange);
+      if(subrange > 1) subrange = 1;
+      break;
+      
+
+    case 'o':
+      sscanf(optarg, "%s", output_file );
+      out_status = 1;
+
           break;
 
       case 1:
@@ -233,9 +270,6 @@ int main (int argc, char **argv) {
       case 'L':
           int L;
           sscanf(optarg, "%d", &L);
-          #ifdef DEBUG
-          printf("Setting L value = %d\n", L);
-          #endif
           psnr.setL(L);
           ssim.setL(L);
           msssim.setL(L);
@@ -252,20 +286,13 @@ int main (int argc, char **argv) {
           #endif
           ssim.setK1(K1);
           msssim.setK1(K1);
-	  // S.setK1(K1);
-	  // MS.setK1(K1);
           break;
 
       case '2':
           double K2;
           sscanf(optarg, "%lf", &K2);
-          #ifdef DEBUG
-          printf("Setting K2 value = %lf\n", K2);
-          #endif
           ssim.setK2(K2);
           msssim.setK2(K2);
-          //S.setK2(K2);
-	  // MS.setK2(K2);
           break;
       
       case 'w':
@@ -278,8 +305,6 @@ int main (int argc, char **argv) {
             w++;
           ssim.setGaussian_window(w);
           msssim.setGaussian_window(w);
-          //S.setGaussian_window(w);
-	  // MS.setGaussian_window(w);
           break;
       
       case 's':
@@ -290,8 +315,6 @@ int main (int argc, char **argv) {
           #endif
           ssim.setGaussian_sigma(sigma);
           msssim.setGaussian_sigma(sigma);
-          //S.setGaussian_sigma(sigma);
-	  // MS.setGaussian_sigma(sigma);
           break;
       
       case 'l':
@@ -301,7 +324,6 @@ int main (int argc, char **argv) {
           printf("Setting level = %d\n", level);
           #endif
           msssim.setLevel(level);
-          //MS.setLevel(level);
           break;
       
       case 'a':
@@ -315,11 +337,7 @@ int main (int argc, char **argv) {
             cut = strtok(NULL, ",");
             ind++;
           }
-          #ifdef DEBUG
-          printf("Setting alpha = \n");
-          #endif
           msssim.setAlpha(alpha);
-          //MS.setAlpha(alpha);
           break;
       
       case 'b':
@@ -333,11 +351,7 @@ int main (int argc, char **argv) {
             cut = strtok(NULL, ",");
             ind++;
           }
-          #ifdef DEBUG
-          printf("Setting beta = \n");
-          #endif
           msssim.setBeta(beta);
-	  // MS.setBeta(beta);
           break;
  
       case 'g':
@@ -351,23 +365,15 @@ int main (int argc, char **argv) {
             cut = strtok(NULL, ",");
             ind++;
           }
-          #ifdef DEBUG
-          printf("Setting gamma = \n");
-          #endif
           msssim.setGamma(gamma);
-          //MS.setGamma(gamma);
           break;
 
       case 'B':
           int B;
           sscanf(optarg, "%d", &B);
-          #ifdef DEBUG
-          printf("Setting B = %d\n", B);
-          #endif
           if (B%2==1)
             B++;
           iqi.setB(B);
-          //I.setB(B);
           break;
       
       case 'i':
@@ -410,72 +416,15 @@ int main (int argc, char **argv) {
       cvReleaseFileStorage( &fs);
     exit(0);
   }
+  
+  float dx, dy, dx_int, dy_int, metric_value;
+  Mat img2_shifted_int = registration(img1, img2, metric_value, dx_int, dy_int, range, 1., algo, method);
+  Mat img2_shifted = registration(img1, img2_shifted_int, metric_value, dx, dy, 2, subrange, algo, method);
+  dx += dx_int;
+  dy += dy_int;
 
-  int shift_range_x = 10; //integer registration range
-  int shift_range_y = 10;
-  Mat translation;    
-  Mat img2_shifted; // shifted versions of img1 and img2
-
- float bestres = 1e99;
- int bestx=0, besty=0;
- //float fullres[2*shift_range_x+1][2*shift_range_y+1];
-
-  for(int i=-shift_range_x;i<=shift_range_x;i++)
-    {
-      for(int j=-shift_range_y;j<=shift_range_y;j++)
-	{
-	  // set the translation matrix
-	  translation = (Mat_<float>(2,3) << 1, 0, (float)i, 0, 1, (float)j);
-	  // shift the images
-	  warpAffine(img2, img2_shifted,translation,img2.size());
-	  //  cout << i << " " << j << " ";
-	  //writeMatToFile(src1, "shifted.txt");
-	  //getchar(); 
-	  if ((algo & opt_mse) != 0)
-	    {
-	      res = mse.compare(img1, img2_shifted);
-	      //  cout << "MSE:\t" << res << "\n";
-	    } 
-
-	  if ((algo & opt_psnr) != 0)
-	    {
-	      res = psnr.compare(img1, img2_shifted);
-	      // cout << "PSNR:\t" << res << "\n";
-	    }
-	  
-	  if ((algo & opt_ssim) != 0)
-	    {
-	      res = ssim.compare(img1, img2_shifted);
-	      // cout << "D-SSIM:\t" << res << "\n";
-	    }
-	  
-	  if ((algo & opt_msssim) != 0)
-	    {
-	      res = msssim.compare(img1, img2_shifted);
-	      // cout << "D-MS-SSIM:\t" << res << "\n";
-	    }
-	  
-	  if ((algo & opt_iqi) != 0)
-	    {
-	      res = iqi.compare(img1, img2_shifted);
-	      //  cout << " IQI:\t" << res << "\n";
-	    }
-
-	  //fullres[i+shift_range_x][j+shift_range_y] = res;
-
-
-      if(res<bestres)
-	{
-	  bestres=res;
-	  bestx = -i;
-	  besty = -j;
-	}
-
-	}
-      
-    }
-  cout << bestres << "\t"<< bestx <<"\t" << besty << endl;
-
+  printf("Algorithm\tRange\tSubpixel\tOptimum\t\tDX\t\tDY\n");
+  printf("%s\t\t%d\t%f\t%f\t%f\t%f\n", algo_names[algo], range, subrange,metric_value, dx, dy);
   waitKey(0);
 
   // Releasing storage
@@ -484,4 +433,87 @@ int main (int argc, char **argv) {
  
   exit(0);
 
+}
+
+Mat registration(Mat& img1, Mat& img2, float& metric_value, float& dx, float& dy, const int range, const float subrange, const int algo, SimilarityMetric* method)
+{
+  calcMSE* mse;
+  calcPSNR* psnr;
+  calcSSIM* ssim;
+  calcMSSSIM* msssim;
+  calcQualityIndex* iqi; 
+   switch(algo)
+    {
+    case ALGO_MSE:
+      mse = dynamic_cast<calcMSE*> (method); 
+       break;
+    case ALGO_PSNR:
+      psnr = dynamic_cast<calcPSNR*> (method); 
+      break;
+    case ALGO_SSIM:
+      ssim = dynamic_cast<calcSSIM*> (method);
+      break;
+    case ALGO_MSSSIM:
+      msssim = dynamic_cast<calcMSSSIM*> (method);
+      break;
+    case ALGO_IQI:
+      iqi = dynamic_cast<calcQualityIndex*> (method);
+      break;
+    }
+ 
+  const float shift_range_x = (float) range;
+  const float shift_range_y = (float) range;
+  const float step_x = subrange;
+  const float step_y = subrange;
+  Mat translation;    
+  Mat img2_shifted; // stores shifted versions of img2
+  float res, bestres = 1e99, bestx=0, besty=0;
+  for(float tx=-shift_range_x; tx<=shift_range_x;tx+=step_x)
+    {
+      for(float ty=-shift_range_y; ty<=shift_range_y;ty+=step_y)
+	{
+	  // set the translation matrix
+	  translation = (Mat_<float>(2,3) << 1, 0, tx, 0, 1, ty);
+	  // shift the images
+	  warpAffine(img2, img2_shifted,translation,img2.size());
+
+	  switch(algo)
+	    {
+	    case ALGO_MSE:
+	      res = mse->compare(img1, img2_shifted);
+	      break;
+	    case ALGO_PSNR:
+	      res = psnr->compare(img1, img2_shifted);
+	      break;
+
+	    case ALGO_SSIM:
+	      res = ssim->compare(img1, img2_shifted);
+	      break;
+	    case ALGO_MSSSIM:
+	      res = msssim->compare(img1, img2_shifted);
+	      break;
+	    case ALGO_IQI:
+	      res = iqi->compare(img1, img2_shifted);
+	      break;
+	    }
+
+	  if(res<bestres)
+	    {
+	      bestres =res;
+	      bestx = tx;
+	      besty = ty;
+	    }
+	  
+	}
+      
+    }
+
+  metric_value = res;
+  dx = bestx;
+  dy = besty;
+  // Now do the final transformation
+  translation = (Mat_<float>(2,3) << 1, 0, bestx, 0, 1, besty);
+  warpAffine(img2, img2_shifted,translation,img2.size());
+
+  return img2_shifted;
 }

@@ -22,6 +22,8 @@ void print_help_menu() {
   printf("\nOptions with Mandatory arguments.\n");
   printf("  --image1                  input image 1 name \n");
   printf("  --image2                  input image 2 name\n");
+  printf("  --range                   integer range for registration\n");
+  printf("  --subpixel                subpixel precision for registration\n");
   printf("  --out                     output format (.xml, [Default stdout])\n");
   printf("  --algorithm               algorithm to use \n");
   printf("                            mse - Mean Square Error\n");
@@ -29,7 +31,6 @@ void print_help_menu() {
   printf("                            ssim - Structural Similarity Index Metric\n");
   printf("                            msssim - Multi-scale Structural Similarity Index Metric\n");
   printf("                            iqi - Image Quality Index \n");
-  printf("                            all - All of the above metrics\n");
   printf("  --L                       L value for PSNR \n");
   printf("  --K1                      K1 value for SSIM \n");
   printf("  --K2                      K2 value for SSIM \n");
