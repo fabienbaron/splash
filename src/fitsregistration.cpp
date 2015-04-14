@@ -111,10 +111,10 @@ Mat cvFITS(const char *filename)
     delete[] image;
 
     // image32 buffer is used to construct a 32 bits cv::mat
-    cv::Mat src = cv::Mat(cv::Size(in_naxes[0], in_naxes[1]),CV_32FC1, image32);
+    Mat src = Mat(Size(in_naxes[0], in_naxes[1]),CV_32FC1, image32);
     
     // we then copy the data to the final cv:mat array so we can delete image32 afterwards 
-    cv::Mat dst;
+    Mat dst;
     src.copyTo(dst);
 
     delete[] in_naxes;
@@ -476,6 +476,7 @@ Mat registration(Mat& img1, Mat& img2, float& metric_value, float& dx, float& dy
     {
       for(float ty=-shift_range_y; ty<=shift_range_y;ty+=step_y)
 	{
+	 
 	  // set the translation matrix
 	  translation = (Mat_<float>(2,3) << 1, 0, tx, 0, 1, ty);
 	  // shift the images
@@ -503,16 +504,16 @@ Mat registration(Mat& img1, Mat& img2, float& metric_value, float& dx, float& dy
 
 	  if(res<bestres)
 	    {
-	      bestres =res;
-	      bestx = tx;
-	      besty = ty;
+	      bestres = res;
+	      bestx   = tx;
+	      besty   = ty;
 	    }
-	  
+	  cout << tx << " " << ty << res << "\n"; 
 	}
       
     }
 
-  metric_value = res;
+  metric_value = bestres;
   dx = bestx;
   dy = besty;
   // Now do the final transformation
