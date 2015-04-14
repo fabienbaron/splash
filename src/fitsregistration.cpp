@@ -14,25 +14,14 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// Including core.h
+#include "core.h"
 
-#include <stdlib.h>
-#include <sstream>
-#include <ctime>
-#include <opencv2/opencv.hpp>
-#include <stdio.h>
-#include <iostream>
-#include <fstream>
-#include <getopt.h>    // for getopt_long
-#include <string.h>
-#include <time.h>
-#include <sys/time.h>
 
 #define MAX_SOURCE_SIZE (0x100000)
 using namespace cv;
 //using namespace std;
 
-// Including core.h
-#include "core.h"
 
 // Including the Similarity Metric Header files
 #include "similarityMetric.h"
