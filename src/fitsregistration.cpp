@@ -508,7 +508,7 @@ Mat registration(Mat& img1, Mat& img2, float& metric_value, float& dx, float& dy
 	      bestx   = tx;
 	      besty   = ty;
 	    }
-	  //  cout << tx << " " << ty << res << "\n"; 
+	  //cout << tx << " " << ty << " " << res << "\n"; 
 	}
       
     }
