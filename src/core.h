@@ -10,6 +10,7 @@
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <getopt.h>    // for getopt_long
 #include <string.h>
 #include <time.h>
