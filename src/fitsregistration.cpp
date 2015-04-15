@@ -101,6 +101,10 @@ Mat cvFITS(const char *filename)
     if (fits_read_img(fptr, TDOUBLE, 1, in_naxes[0] * in_naxes[1], &nullval, image, &dummy_int, &status))
       printerror(status);
 
+    // close FITS file
+    if (fits_close_file(fptr, &status))
+      printerror(status);
+
     // convert to float (32bits) as opencv is buggy with double (64bit)images
     float* image32 = new float[in_naxes[0] * in_naxes[1]];
     for(int j=0; j<in_naxes[0]; j++)
@@ -118,6 +122,7 @@ Mat cvFITS(const char *filename)
     //   src.release();
     delete[] in_naxes;
     delete[] image32;
+
     return dst;
 }
 
