@@ -11,7 +11,7 @@ calcPSNR :: calcPSNR()
     PSNR.val[i] = 0;
 }
 
-float calcPSNR :: compare(Mat& img1, Mat& img2)
+float calcPSNR :: compare(const Mat& img1, const Mat& img2)
 {
   //creating diff and difference squares
   Mat diff, diff_sq;

@@ -67,7 +67,7 @@ void calcMSSSIM :: releaseMSSSIM_map() {
 //  return 1;
 //}
 
-float calcMSSSIM :: compare(Mat& source1, Mat& source2)
+float calcMSSSIM :: compare(const Mat& source1, const Mat& source2)
 {
   // image dimensions
   int x = source1.cols, y = source1.rows;

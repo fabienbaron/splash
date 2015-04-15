@@ -28,7 +28,7 @@ class calcQualityIndex : public SimilarityMetric {
     int print_map();
     
     // returns the iqi_value using openCV functions
-    virtual float compare(Mat& source1, Mat& source2);
+    virtual float compare(const Mat& source1, const Mat& source2);
 
 };
 

@@ -42,7 +42,8 @@ using namespace cv;
 
 const char* algo_names[] = {"MSE", "PSNR","SSIM","MS-SSIM", "IQI"};
 
-Mat registration(Mat& img1, Mat& img2, float& metric_value, float& dx, float& dy, const int range, const float subrange, const int algo, SimilarityMetric* method);
+
+Mat registration(const Mat& img1, const Mat& img2, float& metric_value, float& dx, float& dy, const int range, const float subrange, const int algo, SimilarityMetric* method);
 
 void writeMatToFile(const Mat& m, const char* filename)
 {
@@ -82,22 +83,20 @@ Mat cvFITS(const char *filename)
     // A lot of ugly steps here...
 
     fitsfile *fptr; /* pointer to FITS files, defined in fitsio.h */
-    int status, dummy_int, nfound;
-    char dummy_char[10];
-    long k;
+    int status=0, dummy_int, nfound;
+    char dummy_char[50];
+    long nullval_lng = 0;
     double nullval = 0.;
     if (fits_open_file(&fptr, filename, READONLY, &status))
       printerror(status);
 
-    fits_read_key_lng(fptr, "NAXIS", &k, dummy_char, &status);
+    fits_read_key_lng(fptr, "NAXIS", &nullval_lng, dummy_char, &status);
     long* in_naxes = new long[2];
 
     if (fits_read_keys_lng(fptr, "NAXIS", 1, 2, in_naxes, &nfound, &status))
       printerror(status);
 
-    //  printf("FITS image size: %ld x %ld - %d\n",in_naxes[0] , in_naxes[1], nfound );
-
-    // import raw fits data
+     // import raw fits data
     double* image = new double[in_naxes[0] * in_naxes[1]];
     if (fits_read_img(fptr, TDOUBLE, 1, in_naxes[0] * in_naxes[1], &nullval, image, &dummy_int, &status))
       printerror(status);
@@ -116,7 +115,7 @@ Mat cvFITS(const char *filename)
     // we then copy the data to the final cv:mat array so we can delete image32 afterwards 
     Mat dst;
     src.copyTo(dst);
-
+    //   src.release();
     delete[] in_naxes;
     delete[] image32;
     return dst;
@@ -427,7 +426,7 @@ int main (int argc, char **argv) {
   dx += dx_int;
   dy += dy_int;
 
-  printf("Algorithm\tRange\tSubpixel\tOptimum\t\tDX\t\tDY\n");
+  printf("Algorithm\tRange\tSubpixel\tMinMetric\tDX\t\tDY\n");
   printf("%s\t\t%d\t%f\t%f\t%f\t%f\n", algo_names[algo], range, subrange,metric_value, dx, dy);
   waitKey(0);
 
@@ -439,7 +438,7 @@ int main (int argc, char **argv) {
 
 }
 
-Mat registration(Mat& img1, Mat& img2, float& metric_value, float& dx, float& dy, const int range, const float subrange, const int algo, SimilarityMetric* method)
+Mat registration(const Mat& img1, const Mat& img2, float& metric_value, float& dx, float& dy, const int range, const float subrange, const int algo, SimilarityMetric* method)
 {
   calcMSE* mse;
   calcPSNR* psnr;
