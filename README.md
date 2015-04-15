@@ -14,7 +14,7 @@ Requirements
 ======================
 
 SPLASH uses OpenCV. 
-Under Ubuntu, libopencv-dev and libopencv-highgui-dev are required.
+Under Ubuntu, the library libopencv-dev is required.
 
 Installation
 ======================

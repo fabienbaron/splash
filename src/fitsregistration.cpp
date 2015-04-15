@@ -428,7 +428,7 @@ int main (int argc, char **argv) {
 
   printf("Algorithm\tRange\tSubpixel\tMinMetric\tDX\t\tDY\n");
   printf("%s\t\t%d\t%f\t%f\t%f\t%f\n", algo_names[algo], range, subrange,metric_value, dx, dy);
-  waitKey(0);
+  // waitKey(0);
 
   // Releasing storage
   if (fs != NULL)

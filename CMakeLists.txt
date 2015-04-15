@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 project(splash)
 
 # If you want to override compiler please uncomment the line below
-#SET(CMAKE_C_COMPILER pathto/mycompiler)
+#SET(CMAKE_CXX_COMPILER pathto/mycompiler)
 
 set(CMAKE_BUILD_TYPE release)
 
