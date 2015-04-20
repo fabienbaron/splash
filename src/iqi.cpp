@@ -20,6 +20,7 @@ void calcQualityIndex :: releaseImageQuality_map() {
 
 float calcQualityIndex :: compare(const Mat& img1, const Mat& img2)
 {
+  const float precision = 1e-10;
   //Image squares
   Mat img1_sq, img2_sq, img12;
   
@@ -54,9 +55,9 @@ float calcQualityIndex :: compare(const Mat& img1, const Mat& img2)
     {
       for(int j=0;j<numerator.rows;j++)
 	{
-	  if( fabs(denominator.at<float>(i,j)) < 1e-10)
+	  if( fabs(denominator.at<float>(i,j)) < precision)
 	    {
-	      if (fabs(img12_sq_sum_mul.at<float>(i,j)) > 1e-10)
+	      if (fabs(img12_sq_sum_mul.at<float>(i,j)) > precision)
 		image_quality_map.at<float>(i,j)= 2.*img12_sum_mul.at<float>(i,j)/img12_sq_sum_mul.at<float>(i,j);
 	    }
 	  else 	 
