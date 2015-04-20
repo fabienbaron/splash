@@ -42,14 +42,13 @@ float calcQualityIndex :: compare(const Mat& img1, const Mat& img2)
   img12_sum_mul = img1_sum.mul(img2_sum);
   img12_sq_sum_mul = img1_sum.mul(img1_sum) + img2_sum.mul(img2_sum);
 
-  numerator = 4*(B*B*img12_sum - img12_sum_mul);
+  numerator = 4.*(img12_sum - img12_sum_mul);
   numerator = numerator.mul(img12_sum_mul);
 
-  denominator = B*B*(img1_sq_sum + img2_sq_sum) - img12_sq_sum_mul;
+  denominator = (img1_sq_sum + img2_sq_sum) - img12_sq_sum_mul;
   denominator = denominator.mul(img12_sq_sum_mul);
 
   image_quality_map = Mat::ones(numerator.cols, numerator.rows,CV_32FC1 );
-
 
   for(int i=0;i<numerator.cols;i++)
     {
@@ -69,7 +68,7 @@ float calcQualityIndex :: compare(const Mat& img1, const Mat& img2)
   // average is taken 
   image_quality_value = mean(image_quality_map);
 
-  return 0.5*(image_quality_value.val[0]+1.);
+  return 0.5*(1.-image_quality_value.val[0]);
 }
 
 
