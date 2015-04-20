@@ -7,7 +7,7 @@ SPLASH computes the following difference metrics between two FITS images:
 - Peak Signal to Noise Ratio(PSNR)
 - SSIM, see e.g.  https://ece.uwaterloo.ca/~z70wang/publications/ssim.html
 - MS-SSIM, see e.g. https://ece.uwaterloo.ca/~z70wang/publications/msssim.pdf
-- Universal Image Quality Index, Z. Wang, A.C. Bovik, "A Universal Image Quality Index", IEEE Signal Processing Letters, vol.9, no.3, pp.81-84, Mar 2002.
+- Universal Image Quality Index, https://ece.uwaterloo.ca/~z70wang/publications/uqi.html, in Z. Wang, A.C. Bovik, "A Universal Image Quality Index", IEEE Signal Processing Letters, vol.9, no.3, pp.81-84, Mar 2002.
 - (in progress) Kullback-Leibler divergence
 
 Requirements
