@@ -2,6 +2,9 @@
 #include "similarityMetric.h"
 #include "iqi.h"
 
+// Calculations based on Zhou Wang's original Matlab code
+
+
 calcQualityIndex :: calcQualityIndex()
 {
   B = 8;

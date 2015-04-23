@@ -425,14 +425,19 @@ int main (int argc, char **argv) {
     exit(0);
   }
   
-  float dx, dy, dx_int, dy_int, metric_value;
-  Mat img2_shifted_int = registration(img1, img2, metric_value, dx_int, dy_int, range, 1., algo, method);
-  Mat img2_shifted = registration(img1, img2_shifted_int, metric_value, dx, dy, 2, subrange, algo, method);
-  dx += dx_int;
-  dy += dy_int;
+  float dx = 0 , dy = 0, dx_int = 0 , dy_int =0 , metric_value = 0;
+  
 
-  printf("Algorithm\tRange\tSubpixel\tMinMetric\tDX\t\tDY\n");
-  printf("%s\t\t%d\t%f\t%f\t%f\t%f\n", algo_names[algo], range, subrange,metric_value, dx, dy);
+  if(fabs(subrange) < 1e-4) subrange = 1;
+  if(range < 0) range = 0;
+
+  Mat img2_shifted_int = registration(img1, img2, metric_value, dx_int, dy_int, range, 1., algo, method);
+  if(range > 0) 
+    {
+      Mat img2_shifted = registration(img1, img2_shifted_int, metric_value, dx, dy, 1 , subrange, algo, method);
+    }
+  printf("Algorithm\tRange\tSubpixel\tDiffer\t\tDX\t\tDY\n");
+  printf("%s\t\t%d\t%f\t%f\t%f\t%f\n", algo_names[algo], range, subrange,metric_value, dx+dx_int, dy+dy_int);
   // waitKey(0);
 
   // Releasing storage
@@ -469,10 +474,10 @@ Mat registration(const Mat& img1, const Mat& img2, float& metric_value, float& d
       break;
     }
  
-  const float shift_range_x = (float) range;
-  const float shift_range_y = (float) range;
-  const float step_x = subrange;
-  const float step_y = subrange;
+   const float shift_range_x = fabs((float) range);
+   const float shift_range_y = fabs((float) range);
+   const float step_x = fabs(subrange);
+   const float step_y = fabs(subrange);
   Mat translation;    
   Mat img2_shifted; // stores shifted versions of img2
   float res, bestres = 1e99, bestx=0, besty=0;
@@ -480,7 +485,7 @@ Mat registration(const Mat& img1, const Mat& img2, float& metric_value, float& d
     {
       for(float ty=-shift_range_y; ty<=shift_range_y;ty+=step_y)
 	{
-	 
+	  //	  printf("tx: %f ty:%f range: %d subrange: %f\n", tx, ty, range, subrange);
 	  // set the translation matrix
 	  translation = (Mat_<float>(2,3) << 1, 0, tx, 0, 1, ty);
 	  // shift the images
@@ -511,8 +516,9 @@ Mat registration(const Mat& img1, const Mat& img2, float& metric_value, float& d
 	      bestres = res;
 	      bestx   = tx;
 	      besty   = ty;
+	      //	      cout << "New best " << tx << " " << ty << " " << res << "\n"; 
 	    }
-	  //cout << tx << " " << ty << " " << res << "\n"; 
+
 	}
       
     }

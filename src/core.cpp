@@ -18,8 +18,7 @@ void print_time(clock_t start, int TIMES, const char *s) {
 }
 
 void print_help_menu() {
-  printf("\nUsage: metric [OPTIONS] [arguments] ...\n");
-  printf("\nOptions with Mandatory arguments.\n");
+  printf("\nUsage: splash --image1 ref.fits --image2 current.fits --algorithm sse  --range 20 --subrange .1  ...\n\n");
   printf("  --image1                  input image 1 name \n");
   printf("  --image2                  input image 2 name\n");
   printf("  --range                   integer range for registration\n");
