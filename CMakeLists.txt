@@ -6,8 +6,6 @@ project(splash)
 
 set(CMAKE_BUILD_TYPE release)
 
-find_package(OpenCV REQUIRED )
-
 # Set some CMake properties:
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
