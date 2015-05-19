@@ -21,7 +21,8 @@ using namespace cv;
 using namespace std;
 
 // Colorspace variable
-enum Colorspace {
+enum Colorspace
+{
   GRAYSCALE,
   RGB,
   YCbCr
@@ -37,7 +38,7 @@ void print_time(clock_t start, int TIMES, const char *s);
 void print_help_menu();
 
 // function to write output in an XML format
-void writeXML( CvFileStorage *fs, CvScalar result, const char * algo );
+void writeXML(CvFileStorage *fs, CvScalar result, const char *algo);
 
 // function to write output on stdout or xml file depending upon out_status
 void printCvScalar(CvFileStorage *fs, CvScalar value, const char *comment, int out_status);

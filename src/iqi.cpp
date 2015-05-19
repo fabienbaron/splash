@@ -8,7 +8,7 @@
 calcQualityIndex :: calcQualityIndex()
 {
   B = 8;
-  for (int i=0; i < 4; i++)
+  for (int i = 0; i < 4; i++)
     image_quality_value.val[i] = -2;   // Initialize with an out of bound value for image_quality_value [-1.1]
 }
 
@@ -17,16 +17,17 @@ calcQualityIndex :: ~calcQualityIndex()
   image_quality_map.release();
 }
 
-void calcQualityIndex :: releaseImageQuality_map() {
+void calcQualityIndex :: releaseImageQuality_map()
+{
   image_quality_map.release();
 }
 
-float calcQualityIndex :: compare(const Mat& img1, const Mat& img2)
+float calcQualityIndex :: compare(const Mat &img1, const Mat &img2)
 {
   const float precision = 1e-10;
   //Image squares
   Mat img1_sq, img2_sq, img12;
-  
+
   //Squaring the images thus created
   pow(img1, 2, img1_sq);
   pow(img2, 2, img2_sq);
@@ -35,7 +36,7 @@ float calcQualityIndex :: compare(const Mat& img1, const Mat& img2)
   Mat img1_sum, img2_sum, img12_sum, img1_sq_sum, img2_sq_sum, img12_sum_mul, img12_sq_sum_mul, numerator, denominator;
 
   //PRELIMINARY COMPUTING
-  
+
   //average smoothing is performed
   Size blur_kernel = Size(B, B);
   blur(img1, img1_sum, blur_kernel);
@@ -52,27 +53,27 @@ float calcQualityIndex :: compare(const Mat& img1, const Mat& img2)
   denominator = (img1_sq_sum + img2_sq_sum) - img12_sq_sum_mul;
   denominator = denominator.mul(img12_sq_sum_mul);
 
-  image_quality_map = Mat::ones(numerator.cols, numerator.rows,CV_32FC1 );
+  image_quality_map = Mat::ones(numerator.cols, numerator.rows, CV_32FC1);
 
-  for(int i=0;i<numerator.cols;i++)
+  for (int i = 0; i < numerator.cols; i++)
+  {
+    for (int j = 0; j < numerator.rows; j++)
     {
-      for(int j=0;j<numerator.rows;j++)
-	{
-	  if( fabs(denominator.at<float>(i,j)) < precision)
-	    {
-	      if (fabs(img12_sq_sum_mul.at<float>(i,j)) > precision)
-		image_quality_map.at<float>(i,j)= 2.*img12_sum_mul.at<float>(i,j)/img12_sq_sum_mul.at<float>(i,j);
-	    }
-	  else 	 
-	    image_quality_map.at<float>(i,j) = numerator.at<float>(i,j)/denominator.at<float>(i,j);
-	}
+      if (fabs(denominator.at<float>(i, j)) < precision)
+      {
+        if (fabs(img12_sq_sum_mul.at<float>(i, j)) > precision)
+          image_quality_map.at<float>(i, j) = 2.*img12_sum_mul.at<float>(i, j) / img12_sq_sum_mul.at<float>(i, j);
+      }
+      else
+        image_quality_map.at<float>(i, j) = numerator.at<float>(i, j) / denominator.at<float>(i, j);
     }
+  }
 
   // image_quality_map created in image_quality_map
-  // average is taken 
+  // average is taken
   image_quality_value = mean(image_quality_map);
 
-  return 0.5*(1.-image_quality_value.val[0]);
+  return 0.5 * (1. - image_quality_value.val[0]);
 }
 
 

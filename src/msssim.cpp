@@ -5,14 +5,14 @@
 
 calcMSSSIM :: calcMSSSIM()
 {
-  K1 = 0.001;
-  K2 = 0.003;
+  K1 = 1e-9;
+  K2 = 3e-9;
   gaussian_window = 5;
   gaussian_sigma = 1.5;
   level = 5;
   L = 1;
   ms_ssim_map = NULL;
-  for (int i=0; i < 4; i++)
+  for (int i = 0; i < 4; i++)
     ms_ssim_value.val[i] = -1; // Initialize with an out of bound value of mssim [0,1]
 
   // setting alpha, beta, gamma default values
@@ -33,18 +33,19 @@ calcMSSSIM :: ~calcMSSSIM()
   delete[] beta;
   delete[] gamma;
   int i;
-  for (i=0; i < level; i++) 
-       ms_ssim_map[i].release();
-  
-  if (ms_ssim_map !=NULL) 
+  for (i = 0; i < level; i++)
+    ms_ssim_map[i].release();
+
+  if (ms_ssim_map != NULL)
     delete ms_ssim_map;
 }
 
-void calcMSSSIM :: releaseMSSSIM_map() {
+void calcMSSSIM :: releaseMSSSIM_map()
+{
   int i;
-  for (i=0; i < level; i++) 
-       ms_ssim_map[i].release();
-  
+  for (i = 0; i < level; i++)
+    ms_ssim_map[i].release();
+
   if (ms_ssim_map != NULL)
     delete ms_ssim_map;
 }
@@ -67,14 +68,14 @@ void calcMSSSIM :: releaseMSSSIM_map() {
 //  return 1;
 //}
 
-float calcMSSSIM :: compare(const Mat& source1, const Mat& source2)
+float calcMSSSIM :: compare(const Mat &source1, const Mat &source2)
 {
   // image dimensions
   int x = source1.cols, y = source1.rows;
   // int nChan = source1.nChannels;
   // int d = source1.depth;
 
-  // creating a object of class calcSSIM 
+  // creating a object of class calcSSIM
   // setting the initial parameters values
   calcSSIM ssim;
   ssim.setK1(K1);
@@ -88,12 +89,12 @@ float calcMSSSIM :: compare(const Mat& source1, const Mat& source2)
   Mat downsampleSrc1, downsampleSrc2, temp;
   Size downs_size;
   Scalar mssim_t, mcs_t;
-  for (int i=0; i<level; i++)
+  for (int i = 0; i < level; i++)
   {
     //Downsampling of the original images
-   
+
     //Downsampling the images
-    downs_size = Size((int)(x/pow(2, i)), (int)(y/pow(2, i)));
+    downs_size = Size((int)(x / pow(2, i)), (int)(y / pow(2, i)));
 
     downsampleSrc1 = cv::Mat(downs_size, CV_32FC1);
     downsampleSrc2 = cv::Mat(downs_size, CV_32FC1);
@@ -102,27 +103,26 @@ float calcMSSSIM :: compare(const Mat& source1, const Mat& source2)
     ssim.compare(downsampleSrc1, downsampleSrc2);
     mssim_t = ssim.getMSSIM();
     mcs_t = ssim.getMeanCSvalue();
-    
+
     //releasing the CS_map since not required anymore
-    ssim.releaseCS_map(); 
-    
+    ssim.releaseCS_map();
+
     // calculating the withed average to find ms-ssim
-    for (int j=0; j < 4; j++)
+    for (int j = 0; j < 4; j++)
     {
       if (i == 0)
         ms_ssim_value.val[j] = pow((mcs_t.val[j]), (double)(beta[i]));
-      else 
-        if (i == level-1)
-          ms_ssim_value.val[j] = (ms_ssim_value.val[j]) * pow((mssim_t.val[j]), (double)(beta[i]));
-        else
-          ms_ssim_value.val[j] = (ms_ssim_value.val[j]) * pow((mcs_t.val[j]), (double)(beta[i]));
+      else if (i == level - 1)
+        ms_ssim_value.val[j] = (ms_ssim_value.val[j]) * pow((mssim_t.val[j]), (double)(beta[i]));
+      else
+        ms_ssim_value.val[j] = (ms_ssim_value.val[j]) * pow((mcs_t.val[j]), (double)(beta[i]));
     }
     //Release images
     downsampleSrc1.release();
     downsampleSrc2.release();
 
   }
-  return 1./ms_ssim_value.val[0]-1.;
+  return 1. / ms_ssim_value.val[0] - 1.;
 }
 
 

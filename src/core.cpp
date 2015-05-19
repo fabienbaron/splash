@@ -2,22 +2,25 @@
 
 // Some primitive and useful functions are implemented here
 
-Mat get_gaussian_filter(int filter_size, int sigma) {
+Mat get_gaussian_filter(int filter_size, int sigma)
+{
   Mat filter1D;
   filter1D = getGaussianKernel(filter_size, sigma, CV_32F); // this function creates a 1-D gaussian array
   Mat filter2D = filter1D * filter1D.t(); // converting into 2-D
   return filter2D;
 }
 
-void print_time(clock_t start, int TIMES, const char *s) {
+void print_time(clock_t start, int TIMES, const char *s)
+{
   double diff, time;
-  diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
-  time = diff/TIMES;
-  printf("Time of CPU run using %s (averaged for %d runs): %f milliseconds.\n",s,TIMES, time);
-  printf("Time of CPU run using %s (total for %d runs): %f milliseconds.\n",s, TIMES, diff);
+  diff = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+  time = diff / TIMES;
+  printf("Time of CPU run using %s (averaged for %d runs): %f milliseconds.\n", s, TIMES, time);
+  printf("Time of CPU run using %s (total for %d runs): %f milliseconds.\n", s, TIMES, diff);
 }
 
-void print_help_menu() {
+void print_help_menu()
+{
   printf("\nUsage: splash --image1 ref.fits --image2 current.fits --algorithm sse  --range 20 --subrange .1  ...\n\n");
   printf("  --image1                  input image 1 name \n");
   printf("  --image2                  input image 2 name\n");
@@ -43,12 +46,13 @@ void print_help_menu() {
   printf("  --help                    Displays help menu \n");
 }
 
-void writeXML( CvFileStorage *fs, CvScalar result, const char * algo ) {
-  cvWriteString( fs, "Algorithm", algo);
-  cvStartWriteStruct( fs, "Values", CV_NODE_SEQ);
-  cvWriteReal( fs, 0, 1.0*result.val[0]);
-  cvWriteReal( fs, 0, 1.0*result.val[1]);
-  cvWriteReal( fs, 0, 1.0*result.val[2]);
+void writeXML(CvFileStorage *fs, CvScalar result, const char *algo)
+{
+  cvWriteString(fs, "Algorithm", algo);
+  cvStartWriteStruct(fs, "Values", CV_NODE_SEQ);
+  cvWriteReal(fs, 0, 1.0 * result.val[0]);
+  cvWriteReal(fs, 0, 1.0 * result.val[1]);
+  cvWriteReal(fs, 0, 1.0 * result.val[2]);
   cvEndWriteStruct(fs);
 }
 
@@ -57,13 +61,13 @@ void printCvScalar(CvFileStorage *fs, CvScalar value, const char *comment, int o
   if (out_status == 1)
     writeXML(fs, value, comment);
   else
-    cout<<comment<<" : "<<value.val[0]<<" , "<<value.val[1]<<" , "<<value.val[2]<<"\n";
+    cout << comment << " : " << value.val[0] << " , " << value.val[1] << " , " << value.val[2] << "\n";
 }
 
 void printError(CvFileStorage *fs, const char *comment, int out_status)
 {
   if (out_status == 1)
-    cvWriteString( fs, "Error", comment);
+    cvWriteString(fs, "Error", comment);
   else
     printf("%s \n", comment);
 }

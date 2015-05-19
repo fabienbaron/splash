@@ -4,9 +4,9 @@
 
 calcSSIM :: calcSSIM()
 {
-  K1 = 0.001;
-  K2 = 0.003;
-  gaussian_window = 11;
+  K1 = 1e-9;
+  K2 = 3e-9;
+  gaussian_window = 9;
   gaussian_sigma = 1.5;
   L = 1.;
 }
@@ -22,25 +22,27 @@ calcSSIM :: calcSSIM()
 //  return 1;
 //}
 
-void calcSSIM :: releaseSSIM_map() { 
+void calcSSIM :: releaseSSIM_map()
+{
   ssim_map.release();
 }
 
-void calcSSIM :: releaseCS_map() { 
-  cs_map.release(); 
+void calcSSIM :: releaseCS_map()
+{
+  cs_map.release();
 }
 
-float calcSSIM :: compare(const Mat& img1, const Mat& img2)
+float calcSSIM :: compare(const Mat &img1, const Mat &img2)
 {
   // default settings
-  const double C1 = (K1 * L) * (K1 * L); 
+  const double C1 = (K1 * L) * (K1 * L);
   const double C2 = (K2 * L) * (K2 * L);
 
-  
+
   Size gaussian_kernel;
   gaussian_kernel.width = gaussian_window;
   gaussian_kernel.height = gaussian_window;
-  
+
   Mat img1_sq, img2_sq, img1_img2;
   //Squaring the images thus created
   pow(img1, 2, img1_sq);
@@ -68,17 +70,17 @@ float calcSSIM :: compare(const Mat& img1, const Mat& img2)
 
   GaussianBlur(img1_img2, sigma12, gaussian_kernel, gaussian_sigma);
   sigma12 -= mu1_mu2;
-  
+
   Mat numerator1, numerator2, numerator, denominator1, denominator2, denominator;
 
   // FORMULA to calculate SSIM
   // (2*mu1_mu2 + C1)
-  numerator1 = 2*mu1_mu2 + C1;
-  // (2*sigma12 + C2) 
-  numerator2 = 2*sigma12 + C2;
+  numerator1 = 2 * mu1_mu2 + C1;
+  // (2*sigma12 + C2)
+  numerator2 = 2 * sigma12 + C2;
   // ((2*mu1_mu2 + C1).*(2*sigma12 + C2))
   numerator =  numerator1.mul(numerator2);
- 
+
   // (mu1_sq + mu2_sq + C1)
   denominator1 = mu1_sq + mu2_sq + C1;
 
@@ -90,18 +92,18 @@ float calcSSIM :: compare(const Mat& img1, const Mat& img2)
 
   //ssim map and cs_map
   Mat ssim_map, cs_map;
-  // SSIM_INDEX map 
+  // SSIM_INDEX map
   // ((2*mu1_mu2 + C1).*(2*sigma12 + C2))./((mu1_sq + mu2_sq + C1).*(sigma1_sq + sigma2_sq + C2))
-  ssim_map = numerator/ denominator;
+  ssim_map = numerator / denominator;
   // Contrast Structure CS_index map
   // (2*sigma12 + C2)./(sigma1_sq + sigma2_sq + C2)
   cs_map = numerator2 / denominator2;
 
-  // average is taken for both SSIM_map and CS_map 
+  // average is taken for both SSIM_map and CS_map
   ssim_value = mean(ssim_map);
   mean_cs_value = mean(cs_map);
 
-  return 1./ssim_value.val[0]-1;
+  return 1. / ssim_value.val[0] - 1;
 }
 
 

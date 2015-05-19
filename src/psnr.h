@@ -3,24 +3,34 @@
 
 // PSNR class
 // inheriting from SimilarityMetric class
-class calcPSNR : public SimilarityMetric {
+class calcPSNR : public SimilarityMetric
+{
 
-  private:
-    int L;
-    Scalar mse;
-    Scalar PSNR;
-  
-  public:
-   
-    calcPSNR();
+private:
+  int L;
+  Scalar mse;
+  Scalar PSNR;
 
-    // get and set functions
-    void setL(int value) { L = value; }
-    void setMSE(CvScalar value) { mse = value; }
-    Scalar getPSNR() { return PSNR; }
+public:
 
-    // calculates PSNR using OpenCV functions
-    virtual float compare(const Mat& source1, const Mat& source2);
+  calcPSNR();
+
+  // get and set functions
+  void setL(int value)
+  {
+    L = value;
+  }
+  void setMSE(CvScalar value)
+  {
+    mse = value;
+  }
+  Scalar getPSNR()
+  {
+    return PSNR;
+  }
+
+  // calculates PSNR using OpenCV functions
+  virtual float compare(const Mat &source1, const Mat &source2);
 
 };
 

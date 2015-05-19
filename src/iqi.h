@@ -3,32 +3,42 @@
 
 // Image Quality Index class
 // inheriting SimilarityMetric
-class calcQualityIndex : public SimilarityMetric {
+class calcQualityIndex : public SimilarityMetric
+{
 
-  private:
-    int B; // blur block size value for filtering
-    Mat image_quality_map;
-    Scalar image_quality_value; // image_quality_index value
+private:
+  int B; // blur block size value for filtering
+  Mat image_quality_map;
+  Scalar image_quality_value; // image_quality_index value
 
-  public:
+public:
 
-    calcQualityIndex();
-    
-    ~calcQualityIndex();
+  calcQualityIndex();
 
-    // get and setfunctions    
-    void setB(int val) { B = val; }
+  ~calcQualityIndex();
 
-    Scalar getImageQuality() { return image_quality_value; }
-    Mat getImageQuality_map() { return image_quality_map; }
+  // get and setfunctions
+  void setB(int val)
+  {
+    B = val;
+  }
 
-    void releaseImageQuality_map();
+  Scalar getImageQuality()
+  {
+    return image_quality_value;
+  }
+  Mat getImageQuality_map()
+  {
+    return image_quality_map;
+  }
 
-    // prints the index_map
-    int print_map();
-    
-    // returns the iqi_value using openCV functions
-    virtual float compare(const Mat& source1, const Mat& source2);
+  void releaseImageQuality_map();
+
+  // prints the index_map
+  int print_map();
+
+  // returns the iqi_value using openCV functions
+  virtual float compare(const Mat &source1, const Mat &source2);
 
 };
 
