@@ -442,10 +442,10 @@ int main(int argc, char **argv)
 
 
   if (fabs(subrange) < 1e-4) subrange = 1;
-  if (range < 0) range = 0;
+  if (range < 0) range = 0; // this means we only want the metric and we don't want to search for the optimum
 
   Mat img2_shifted_int = registration(img1, img2, metric_value, dx_int, dy_int, range, 1., algo, method);
-  if (range > 0)
+  if((range > 0)||(subrange >= 1)) // this excludes cases where we don't want subrange shifts (= "compute metric only" or "compute integer range only") 
   {
     Mat img2_shifted = registration(img1, img2_shifted_int, metric_value, dx, dy, 1 , subrange, algo, method);
   }
