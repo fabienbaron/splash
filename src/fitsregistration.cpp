@@ -435,22 +435,21 @@ int main(int argc, char **argv)
   if (range < 0) range = 0; // this means we only want the metric and we don't want to search for the optimum
 
   Mat img2_shifted_int = registration(img1, img2, metric_value, dx_int, dy_int, range, 1., algo, method);
+
   if((range > 0)||(subrange >= 1)) // this excludes cases where we don't want subrange shifts (= "compute metric only" or "compute integer range only") 
   {
     Mat img2_shifted = registration(img1, img2_shifted_int, metric_value, dx, dy, 1 , subrange, algo, method);
+    if(out_status > 0) write_cvFITS(img2_shifted, output_file) ;
   }
+  else
+    {
+      if(out_status > 0) write_cvFITS(img2_shifted_int, output_file) ;
+    }
+  
   printf("Algorithm\tRange\tSubpixel\tDiffer\t\tDX\t\tDY\n");
   printf("%s\t\t%d\t%f\t%f\t%f\t%f\n", algo_names[algo], range, subrange, metric_value, dx + dx_int, dy + dy_int);
 
-  // Optional - Write FITS shifted image to file
-  if(out_status > 0)
-    {
-     if((range > 0)||(subrange >= 1))
-       write_cvFITS(img2, output_file) ;
-     else
-       write_cvFITS(img2, output_file) ;
-    }
-  exit(0);
+   exit(0);
 
 }
 
