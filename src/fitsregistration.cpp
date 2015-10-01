@@ -34,16 +34,16 @@ using namespace cv;
 // FITS library
 #include "fitsio.h"
 
-#define ALGO_MSE   0
-#define ALGO_PSNR  1
-#define ALGO_SSIM  2
+#define ALGO_MSE    0
+#define ALGO_PSNR   1
+#define ALGO_SSIM   2
 #define ALGO_MSSSIM 3
-#define ALGO_IQI   4
+#define ALGO_IQI    4
 
 const char *algo_names[] = {"MSE", "PSNR", "SSIM", "MS-SSIM", "IQI"};
-
-
-Mat registration(const Mat &img1, const Mat &img2, float &metric_value, float &dx, float &dy, const int range, const float subrange, const int algo, SimilarityMetric *method);
+void write_cvFITS(const Mat &img, const char* output_file);
+Mat registration(const Mat &img1, const Mat &img2, float &metric_value, float &dx, float &dy,
+		 const int range, const float subrange, const int algo, SimilarityMetric *method);
 
 void writeMatToFile(const Mat &m, const char *filename)
 {
@@ -152,12 +152,9 @@ int main(int argc, char **argv)
   SimilarityMetric *method;
   // Creating ouput file storage
   CvFileStorage *fs;
-  char output_file[50];
+  char output_file[100];
   int err;
   int out_status = 0;
-  fs = NULL;
-  if (out_status == 1)
-    fs = cvOpenFileStorage(output_file, 0, CV_STORAGE_WRITE);
   char error[100];
 
   // Setting up the options
@@ -413,14 +410,9 @@ int main(int argc, char **argv)
     }
   }
 
-
-  if (out_status == 1)
-    fs = cvOpenFileStorage(output_file, 0, CV_STORAGE_WRITE);
-
   if (!image1_status || !image2_status)
   {
-    sprintf(error, "%s", "No Input image Arguments");
-    printError(fs, error, out_status);
+    printf("No Input image Arguments\n");
     exit(0);
   }
 
@@ -432,9 +424,7 @@ int main(int argc, char **argv)
 
   if ((img1.rows != img2.rows) || (img1.cols != img2.cols))
   {
-    printError(fs, "Image Dimensions mis-match", out_status);
-    if (fs != NULL)
-      cvReleaseFileStorage(&fs);
+    printf("Image Dimensions mis-match\n");
     exit(0);
   }
 
@@ -451,15 +441,53 @@ int main(int argc, char **argv)
   }
   printf("Algorithm\tRange\tSubpixel\tDiffer\t\tDX\t\tDY\n");
   printf("%s\t\t%d\t%f\t%f\t%f\t%f\n", algo_names[algo], range, subrange, metric_value, dx + dx_int, dy + dy_int);
-  // waitKey(0);
 
-  // Releasing storage
-  if (fs != NULL)
-    cvReleaseFileStorage(&fs);
-
+  // Optional - Write FITS shifted image to file
+  if(out_status > 0)
+    {
+     if((range > 0)||(subrange >= 1))
+       write_cvFITS(img2, output_file) ;
+     else
+       write_cvFITS(img2, output_file) ;
+    }
   exit(0);
 
 }
+
+void write_cvFITS(const Mat &img, const char* output_file)
+{
+
+  double *image = new double[img.rows * img.cols];
+  for(int i=0; i<img.cols;i++)
+    for(int j=0;j<img.rows;j++)
+      image[j*img.cols+i] = img.at<float>(j,i);
+  
+  char filename[200];
+  sprintf(filename, "!%s", output_file);
+  int bitpix = DOUBLE_IMG; /* 32-bit unsigned long pixel values       */
+  long naxis=2, naxes[2]={img.rows, img.cols};
+  int status = 0;
+  fitsfile *fptr; /* pointer to the FITS file, defined in fitsio.h */
+ 
+  if (fits_create_file(&fptr, filename, &status)) /* create new FITS file */
+    printerror(status);
+
+  if (fits_create_img(fptr, bitpix, naxis, naxes, &status))
+    printerror(status);
+
+  long fpixel = 1; /* first pixel to write      */
+
+  /* write the array of unsigned integers to the FITS file */
+  if (fits_write_img(fptr, TDOUBLE, fpixel, naxes[0] * naxes[1], image, &status))
+    printerror(status);
+
+  if (fits_close_file(fptr, &status)) /* close the file */
+    printerror(status);
+  delete[] image;
+}
+
+
+
 
 Mat registration(const Mat &img1, const Mat &img2, float &metric_value, float &dx, float &dy, const int range, const float subrange, const int algo, SimilarityMetric *method)
 {
