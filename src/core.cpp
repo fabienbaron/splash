@@ -21,7 +21,7 @@ void print_time(clock_t start, int TIMES, const char *s)
 
 void print_help_menu()
 {
-  printf("\nUsage: splash --image1 ref.fits --image2 current.fits --algorithm sse  --range 20 --subrange .1  ...\n\n");
+  printf("\nUsage: splash --image1 ref.fits --image2 current.fits --algorithm mse  --range 20 --subrange .1  --o output.fis ...\n\n");
   printf("  --image1                  input image 1 name \n");
   printf("  --image2                  input image 2 name\n");
   printf("  --range                   integer range for registration\n");
@@ -32,6 +32,7 @@ void print_help_menu()
   printf("                            ssim - Structural Similarity Index Metric\n");
   printf("                            msssim - Multi-scale Structural Similarity Index Metric\n");
   printf("                            iqi - Image Quality Index \n");
+  printf("  --o                       Output filename for the shifted image \n");
   printf("  --L                       L value for PSNR \n");
   printf("  --K1                      K1 value for SSIM \n");
   printf("  --K2                      K2 value for SSIM \n");
