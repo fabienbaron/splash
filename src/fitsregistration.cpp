@@ -41,7 +41,7 @@ using namespace cv;
 #define ALGO_IQI    4
 
 // external function from Hilton Bristow
-void shift(const cv::Mat& src, cv::Mat& dst, cv::Point2f delta, int fill=cv::BORDER_CONSTANT, cv::Scalar value=cv::Scalar(0,0,0,0));
+//void shift(const cv::Mat& src, cv::Mat& dst, cv::Point2f delta, int fill=cv::BORDER_CONSTANT, cv::Scalar value=cv::Scalar(0,0,0,0));
 
 // internal functions
 const char *algo_names[] = {"MSE", "PSNR", "SSIM", "MS-SSIM", "IQI"};
@@ -49,9 +49,6 @@ void write_cvFITS(const Mat &img, const char* output_file);
 Mat registration(const Mat &img1, const Mat &img2, float &metric_value, float &dx, float &dy,
 		 const int range, const float subrange, const int algo, SimilarityMetric *method);
 
-
-
-  
 void writeMatToFile(const Mat &m, const char *filename)
 {
   ofstream fout(filename);
@@ -523,7 +520,8 @@ Mat registration(const Mat &img1, const Mat &img2, float &metric_value, float &d
   const float shift_range_y = fabs((float) range);
   const float step_x = fabs(subrange);
   const float step_y = fabs(subrange);
-  Point2f translation;
+  //Point2f translation;
+  Mat translation;
   Mat img2_shifted; // stores shifted versions of img2
   float res, bestres = 1e99, bestx = 0, besty = 0;
   for (float tx = -shift_range_x; tx <= shift_range_x; tx += step_x)
@@ -532,12 +530,12 @@ Mat registration(const Mat &img1, const Mat &img2, float &metric_value, float &d
     {
       //    printf("tx: %f ty:%f range: %d subrange: %f\n", tx, ty, range, subrange);
       // set the translation matrix
-      //translation = (Mat_<float>(2, 3) << 1, 0, tx, 0, 1, ty);
+      translation = (Mat_<float>(2, 3) << 1, 0, tx, 0, 1, ty);
       // shift the images
-      //warpAffine(img2, img2_shifted, translation, img2.size());
+      warpAffine(img2, img2_shifted, translation, img2.size(), INTER_LANCZOS4, BORDER_CONSTANT,0);
 
-      translation = Point2f(tx, ty);
-      shift(img2, img2_shifted, translation, BORDER_CONSTANT, 0);
+     // translation = Point2f(tx, ty);
+     // shift(img2, img2_shifted, translation, BORDER_CONSTANT, 0);
       
       switch (algo)
       {
@@ -575,11 +573,11 @@ Mat registration(const Mat &img1, const Mat &img2, float &metric_value, float &d
   dx = bestx;
   dy = besty;
   // Now do the final transformation
-  //translation = (Mat_<float>(2, 3) << 1, 0, bestx, 0, 1, besty);
-  //warpAffine(img2, img2_shifted, translation, img2.size());
+  translation = (Mat_<float>(2, 3) << 1, 0, bestx, 0, 1, besty);
+  warpAffine(img2, img2_shifted, translation, img2.size(), INTER_LANCZOS4, BORDER_CONSTANT,0);
 
-  translation = Point2f(bestx, besty);
-  shift(img2, img2_shifted, translation, BORDER_CONSTANT, 0);
+  // translation = Point2f(bestx, besty);
+  // shift(img2, img2_shifted, translation, BORDER_CONSTANT, 0);
  
   return img2_shifted;
 }
