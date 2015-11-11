@@ -15,5 +15,9 @@ file(GLOB SOURCE *.h *.cpp)
 
 # Now add the binary
 add_executable(splash ${SOURCE})
-
 target_link_libraries(splash ${OpenCV_LIBS} ${CFITSIO_LIBRARIES})
+
+add_library(splashlib ${SOURCE})
+# Note fitsio.h is not included by any splashlib header
+target_include_directories(splashlib PUBLIC . ${OpenCV_INCLUDE_DIR})
+target_link_libraries(splashlib ${OpenCV_LIBS} ${CFITSIO_LIBRARIES})
