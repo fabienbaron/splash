@@ -13,6 +13,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
 
 # Build the main directory, always
 add_subdirectory(src)
+add_subdirectory(test)
 
 
 
